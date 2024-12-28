@@ -1,29 +1,35 @@
-/**
- * CommandContext allows built-in or user-defined commands
- * to access the console's state: the full command list
- * and a function to modify the console history.
- */
-export interface CommandContext {
-  /** Full array of all commands (including built-ins) */
-  allCommands: Command[];
+import React from "react";
 
-  /** Allows a command (like "clear") to wipe the console history */
+export interface CommandContext {
+  allCommands: Command[];
   setHistory: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-/**
- * A single command definition.
- */
 export interface Command {
   name: string;
   description: string;
   usage: string;
   defaults?: Record<string, string>;
-  subCommands?: Command[]; // Supports nested subcommands
+  subCommands?: Command[];
   parseParams: (args: string[]) => Record<string, any> | null;
-  run: (args: string[], params: Record<string, any>, context: CommandContext) => {
-    completed: boolean;
-    status: string;
-  };
-  autoComplete?: (args: string[]) => string[]; // Suggests custom arguments
+  run: (
+    args: string[],
+    params: Record<string, any>,
+    context: CommandContext
+  ) => { completed: boolean; status: string };
+  autoComplete?: (args: string[]) => string[];
+}
+
+export interface ConsoleTheme {
+  font?: string;
+  fontSize?: string;
+  lineHeight?: string;
+  textColor?: Record<string, string>;
+  backgroundColor?: Record<string, string>;
+  scrollColor?: Record<string, string>;
+}
+
+export interface ConsoleLineProps {
+  commands: Command[];
+  style?: ConsoleTheme;
 }
