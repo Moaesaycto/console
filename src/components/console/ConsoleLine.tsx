@@ -180,9 +180,11 @@ import React, {
         setSuggestionIndex(0);
         return;
       }
+    
       const splitted = currentInput.split(" ");
+      const tokens = splitted.filter(Boolean);
+    
       if (currentInput.endsWith(" ")) {
-        const tokens = splitted.filter(Boolean);
         const cmd = walkChain(tokens, commands);
         if (cmd && cmd.subCommands && cmd.subCommands.length > 0) {
           setSuggestions(cmd.subCommands.map((c) => c.name));
@@ -194,19 +196,21 @@ import React, {
         }
         return;
       }
-      const tokens = splitted.filter(Boolean);
-      if (!tokens.length) {
-        setSuggestions([]);
-        setShowSuggestions(false);
-        return;
-      }
+    
       const allButLast = tokens.slice(0, -1);
       const lastToken = tokens[tokens.length - 1];
       const parent = walkChain(allButLast, commands);
+    
       if (!parent) {
         const filtered = commands
           .map((c) => c.name)
           .filter((n) => n.startsWith(lastToken));
+        if (filtered.length === 1 && filtered[0] === lastToken) {
+          // If there's only one suggestion and it matches exactly, clear suggestions
+          setSuggestions([]);
+          setShowSuggestions(false);
+          return;
+        }
         if (filtered.length) {
           setSuggestions(filtered);
           setShowSuggestions(true);
@@ -217,10 +221,17 @@ import React, {
         }
         return;
       }
+    
       if (parent.subCommands && parent.subCommands.length > 0) {
         const subfiltered = parent.subCommands
           .map((c) => c.name)
           .filter((n) => n.startsWith(lastToken));
+        if (subfiltered.length === 1 && subfiltered[0] === lastToken) {
+          // If there's only one suggestion and it matches exactly, clear suggestions
+          setSuggestions([]);
+          setShowSuggestions(false);
+          return;
+        }
         if (subfiltered.length) {
           setSuggestions(subfiltered);
           setShowSuggestions(true);
@@ -231,9 +242,11 @@ import React, {
         }
         return;
       }
+    
       setSuggestions([]);
       setShowSuggestions(false);
     }
+    
   
     let ghostedText = "";
     if (showSuggestions && suggestions.length > 0 && input) {
