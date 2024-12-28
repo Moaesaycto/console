@@ -123,7 +123,7 @@ import React, {
           e.preventDefault();
           setSuggestionIndex((prev) => Math.max(prev - 1, 0));
           return;
-        } else if (e.key === "Tab") {
+        } else if (e.key === "Tab" || e.key === "Enter") {
           e.preventDefault();
           autoCompleteSuggestion();
           return;
