@@ -47,8 +47,8 @@ export interface ThemeColorSet {
     },
     scrollColor: {
       primary: "#73AD34",
-      secondary: "#01A816",
-      default: "#115BCA",
+      secondary: "#171717",
+      default: "#171717",
     },
   };
   

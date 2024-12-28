@@ -1,7 +1,3 @@
-// /src/types.ts
-
-import React from "react";
-
 /**
  * CommandContext allows built-in or user-defined commands
  * to access the console's state: the full command list
@@ -13,8 +9,6 @@ export interface CommandContext {
 
   /** Allows a command (like "clear") to wipe the console history */
   setHistory: React.Dispatch<React.SetStateAction<string[]>>;
-
-  /** Add other console-level state or methods here if needed. */
 }
 
 /**

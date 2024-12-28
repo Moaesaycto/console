@@ -1,5 +1,3 @@
-// /src/commands/helloCommand.ts
-
 import { Command, CommandContext } from "../components/console/types";
 
 const dayCommand: Command = {

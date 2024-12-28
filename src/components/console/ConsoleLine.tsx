@@ -1,5 +1,3 @@
-// /src/components/ConsoleLine.tsx
-
 import React, {
     useState,
     useRef,
@@ -22,10 +20,8 @@ import React, {
   export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style }) => {
     commands = [...builtInCommands, ...commands];
 
-    /** 1) Merge theme */
     const finalTheme = mergeTheme(style);
   
-    /** 2) State */
     const [history, setHistory] = useState<string[]>([]);
     const [input, setInput] = useState<string>("");
   
@@ -36,7 +32,6 @@ import React, {
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [suggestionIndex, setSuggestionIndex] = useState(0);
   
-    /** Refs */
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
   
@@ -258,18 +253,16 @@ import React, {
     const consoleContainerStyle: CSSProperties = {
       display: "flex",
       flexDirection: "column",
-      width: "100%",    // Fill parent's width
-      height: "100%",   // Fill parent's height if parent has one
+      width: "100%",
+      height: "100%",
       border: "1px solid #ccc",
       fontFamily: finalTheme.font,
       fontSize: finalTheme.fontSize,
       lineHeight: finalTheme.lineHeight,
       position: "relative",
-      // optional minHeight if you want to ensure it's never "too small"
       // minHeight: "400px",
     };
   
-    // We'll give the scrollable area a class so we can apply scrollbar styling
     const outputAreaClass = "console-scroll-area";
   
     const outputAreaStyle: CSSProperties = {
@@ -357,7 +350,7 @@ import React, {
   
     return (
       <div style={consoleContainerStyle}>
-        {/* We'll define custom scrollbar styling for .console-scroll-area */}
+        {/* custom scrollbar styling for .console-scroll-area */}
         <style>{`
           .${outputAreaClass} {
             scrollbar-width: thin;

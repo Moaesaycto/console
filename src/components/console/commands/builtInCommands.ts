@@ -1,5 +1,3 @@
-// /src/commands/builtInCommands.ts
-
 import { Command, CommandContext } from "../types";
 
 /** Clears the console output */
