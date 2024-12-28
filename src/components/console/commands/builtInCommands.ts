@@ -32,9 +32,10 @@ function paginateCommands(
   page: number,
   pageSize = 10
 ): { items: Command[]; totalPages: number } {
-  const totalPages = Math.ceil(cmds.length / pageSize) || 1;
+  const sortedCmds = [...cmds].sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+  const totalPages = Math.ceil(sortedCmds.length / pageSize) || 1;
   const startIndex = (page - 1) * pageSize;
-  const items = cmds.slice(startIndex, startIndex + pageSize);
+  const items = sortedCmds.slice(startIndex, startIndex + pageSize);
   return { items, totalPages };
 }
 
@@ -42,9 +43,12 @@ function paginateCommands(
 function buildCommandHelp(cmd: Command) {
   let subcommandsInfo = "";
   if (cmd.subCommands && cmd.subCommands.length > 0) {
+    const sortedSubCommands = [...cmd.subCommands].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    ); // Sort alphabetically
     subcommandsInfo =
       "Arguments:\n" +
-      cmd.subCommands
+      sortedSubCommands
         .map((sc) => `- ${sc.name.padEnd(16, ".")} ${sc.description}`)
         .join("\n");
   }
@@ -89,7 +93,7 @@ export const helpCommand: Command = {
   },
   run: (args, params, context: CommandContext) => {
     void args;
-    
+
     const { tokens, page } = params;
     const allCmds = context.allCommands;
 

@@ -15,34 +15,15 @@ export interface CommandContext {
  * A single command definition.
  */
 export interface Command {
-  /** The name the user types to invoke this command. */
   name: string;
-
-  /** A brief description of the command (shown in help). */
   description: string;
-
-  /** Optional list of nested subcommands. */
-  subCommands?: Command[];
-
-  /** Default parameters for the command if needed. */
-  defaults?: Record<string, string>;
-
-  /** Usage string for help output (e.g., "hello day <name> [--time=true]") */
   usage: string;
-
-  /**
-   * parseParams: Convert user input (remaining args) into a structured
-   * object or null (null => invalid usage).
-   */
+  defaults?: Record<string, string>;
+  subCommands?: Command[]; // Supports nested subcommands
   parseParams: (args: string[]) => Record<string, any> | null;
-
-  /**
-   * run: Execute the command logic.
-   * context gives access to allCommands and setHistory.
-   */
-  run: (
-    args: string[],
-    params: Record<string, any>,
-    context: CommandContext
-  ) => { completed: boolean; status: string };
+  run: (args: string[], params: Record<string, any>, context: CommandContext) => {
+    completed: boolean;
+    status: string;
+  };
+  autoComplete?: (args: string[]) => string[]; // Suggests custom arguments
 }
