@@ -37,6 +37,7 @@ export const mathCommand: Command = {
         return { expression };
     },
     run: (args, params, context: CommandContext) => {
+        void args, context;
         const { expression } = params;
 
         const result = safeEvaluate(expression);
