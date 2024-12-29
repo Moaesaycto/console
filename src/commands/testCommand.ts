@@ -65,14 +65,21 @@ export const testCommand: Command = {
           },
           autoComplete: (args) => {
             const operations = ["add", "sub", "mul", "div"];
+            
             if (args.length === 0) {
               return operations;
             }
+          
             if (args.length === 1) {
-              return operations.filter((op) => op.startsWith(args[0]));
+              const currentInput = args[0];
+              if (!operations.includes(currentInput)) {
+                return operations.filter((op) => op.startsWith(currentInput));
+              }
+              return [];
             }
+
             return [];
-          },
+          },          
         },
         {
           name: "string",
