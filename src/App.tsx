@@ -21,6 +21,14 @@ const partialTheme: ConsoleTheme = {
   fontSize: "16px",
 };
 
+const startMessage: string = `Initiating session...
+Console loaded successfully!
+&wNote: This console is just a demonstration. You will be able to implement your own custom commands when implemented yourself. Learn more at github.com/Moaesaycto/console.\n
+&s---===[ &rMOAE&s ]===---&r
+Welcome to the Custom Console Demo by MOAE!
+Type 'help' to see the available commands.
+`
+
 const commands = [
   helloCommand,
   mathCommand,
@@ -49,6 +57,13 @@ const commandDescriptions = [
   ["time", "Displays the current date and time."],
 ];
 
+const colorCodes = [
+  ["&r", "Return to primary color"],
+  ["&s", "Secondary color"],
+  ["&w", "Warning color"],
+  ["&e", "Error color"]
+]
+
 function App() {
   return (
     <div
@@ -68,7 +83,7 @@ function App() {
             textAlign: "center",
             margin: "0 auto",
             fontFamily: "Barlow, sans-serif",
-            fontSize: "18px", // Adjust font size as needed
+            fontSize: "18px",
             lineHeight: "1.6",
           }}
         >
@@ -89,10 +104,8 @@ function App() {
           >
             here
           </a>
-          . There, you should be able to find a tutorial on how to implement
-          your own functions to it, along with the basic implementation you see
-          here on this site! Type <code style={codeStyle}>help</code> below to
-          learn about each command.
+          . There, you should be able to find a tutorial on how to implement your own functions and styles to it, along with the basic implementation you see here on
+          this site! Type <code style={codeStyle}>help</code> below to learn about each command.
         </p>
         <div
           style={{
@@ -102,13 +115,17 @@ function App() {
             backgroundColor: "#222",
           }}
         >
-          <ConsoleLine commands={commands} style={partialTheme} />
+          <ConsoleLine commands={commands} style={partialTheme} startMessage={startMessage} />
         </div>
         <br />
         <div style={{ width: "80%", margin: "20px auto", color: "#fff" }}>
           <h3 style={{ textAlign: "center", marginBottom: "10px" }}>
             Available Commands
           </h3>
+          <p>
+            To learn more about each command, use the <code style={codeStyle}>help</code> command in the console above. For example, type <code style={codeStyle}>help hello</code> to
+            see the usage of the <code style={codeStyle}>hello</code> command
+          </p>
           <table style={tableStyle}>
             <thead>
               <tr>
@@ -128,6 +145,39 @@ function App() {
             </tbody>
           </table>
         </div>
+        <br />
+        <div style={{ width: "80%", margin: "20px auto", color: "#fff" }}>
+          <h3 style={{ textAlign: "center", marginBottom: "10px" }}>
+            Color Codes
+          </h3>
+          <p>
+            Color codes are used to change the preceeding text to a certain color. For example, if you were to type <code style={codeStyle}>&eHello&r, World!</code>, the
+            word <code style={codeSecondaryStyle}>Hello</code> will be in the error color, while the <code style={codeSecondaryStyle}>, World!</code> part of the string is
+            returned to the primary color.
+          </p>
+          <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th style={tableHeaderStyle}>Code</th>
+                <th style={tableHeaderStyle}>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {colorCodes.map(([code, desc], idx) => (
+                <tr key={idx}>
+                  <td style={tableCellStyle}>
+                    <code style={codeStyle}>{code}</code>
+                  </td>
+                  <td style={tableCellStyle}>{desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p>
+            You can try this out yourself in the console above by using these codes with the <code style={codeStyle}>echo</code> command. For example, type
+            out <code style={codeStyle}>echo &eHello&r, World!</code> to see it in action. These are automatically formatted by 
+          </p>
+        </div>
       </div>
       <br />
       <Footer />
@@ -135,10 +185,17 @@ function App() {
   );
 }
 
-/* Styles */
 const codeStyle: React.CSSProperties = {
   backgroundColor: "#333",
   color: "#00ffcc",
+  padding: "2px 6px",
+  borderRadius: "4px",
+  fontFamily: "monospace",
+};
+
+const codeSecondaryStyle: React.CSSProperties = {
+  backgroundColor: "#333",
+  color: "#a782ff",
   padding: "2px 6px",
   borderRadius: "4px",
   fontFamily: "monospace",

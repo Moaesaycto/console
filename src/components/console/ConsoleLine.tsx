@@ -28,14 +28,16 @@ import {
 interface ConsoleLineProps {
   commands: Command[];
   style?: ConsoleTheme;
+  startMessage?: string;
 }
 
-export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style }) => {
+
+export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, startMessage }) => {
   commands = [...builtInCommands, ...commands];
 
   const finalTheme = mergeTheme(style);
 
-  const [history, setHistory] = useState<string[]>([]);
+  const [history, setHistory] = useState<string[]>(startMessage ? [startMessage] : []);
   const [input, setInput] = useState<string>("");
 
   const [commandHistory, setCommandHistory] = useState<string[]>([]);

@@ -18,6 +18,39 @@ export function updateSuggestions(
   const endsWithSpace = currentInput.endsWith(" ");
   const tokens = currentInput.trim().split(" ").filter((t) => t !== "");
 
+  // Check if the first token matches a valid top-level command
+  const firstToken = tokens[0];
+  const validTopLevelCommand = commands.find((cmd) => cmd.name === firstToken);
+
+  if (tokens.length === 1) {
+    // User is typing the first token; suggest top-level commands
+    const filteredCommands = commands
+      .map((c) => c.name)
+      .filter((name) => name.startsWith(firstToken));
+
+    // If the first token matches exactly one command, and no other options exist, hide autocomplete
+    if (
+      filteredCommands.length === 1 &&
+      filteredCommands[0] === firstToken
+    ) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    setSuggestions(filteredCommands);
+    setShowSuggestions(filteredCommands.length > 0);
+    return;
+  }
+
+  if (!validTopLevelCommand) {
+    // If the first token is not a valid command, hide suggestions
+    setSuggestions([]);
+    setShowSuggestions(false);
+    setSuggestionIndex(0);
+    return;
+  }
+
   if (endsWithSpace) {
     const foundCmd = walkChain(tokens, commands);
 
@@ -56,30 +89,10 @@ export function updateSuggestions(
     const lastToken = tokens[tokens.length - 1];
     const priorTokens = tokens.slice(0, -1);
 
-    if (priorTokens.length === 0) {
-      // Suggest top-level commands matching the partial last token
-      const filteredCommands = commands
-        .map((c) => c.name)
-        .filter((name) => name.startsWith(lastToken));
-
-      // If the last token matches exactly one command, and no other options exist, hide autocomplete
-      if (
-        filteredCommands.length === 1 &&
-        filteredCommands[0] === lastToken
-      ) {
-        setSuggestions([]);
-        setShowSuggestions(false);
-        return;
-      }
-
-      setSuggestions(filteredCommands);
-      setShowSuggestions(filteredCommands.length > 0);
-      return;
-    }
-
     const foundCmd = walkChain(priorTokens, commands);
 
     if (!foundCmd) {
+      // Suggest top-level commands if no valid prior chain exists
       const topLevelMatches = commands
         .map((c) => c.name)
         .filter((name) => name.startsWith(lastToken));

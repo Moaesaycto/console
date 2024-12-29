@@ -1,6 +1,7 @@
 import { Command, CommandContext } from "../types";
 
-/** Clears the console output */
+const HELP_PAGE_SIZE = 10;
+
 export const clearCommand: Command = {
   name: "clear",
   description: "Clears the console output",
@@ -13,7 +14,6 @@ export const clearCommand: Command = {
   },
 };
 
-/** Utility: find command chain by tokens */
 function findCommandChain(tokens: string[], commands: Command[]): Command | null {
   if (!tokens.length) return null;
   const [first, ...rest] = tokens;
@@ -30,7 +30,7 @@ function findCommandChain(tokens: string[], commands: Command[]): Command | null
 function paginateCommands(
   cmds: Command[],
   page: number,
-  pageSize = 10
+  pageSize = HELP_PAGE_SIZE
 ): { items: Command[]; totalPages: number } {
   const sortedCmds = [...cmds].sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
   const totalPages = Math.ceil(sortedCmds.length / pageSize) || 1;
@@ -73,7 +73,6 @@ function buildCommandHelp(cmd: Command) {
     .join("\n");
 }
 
-/** The "help" command */
 export const helpCommand: Command = {
   name: "help",
   description: "Displays help information about commands",
@@ -100,6 +99,15 @@ export const helpCommand: Command = {
     // CASE A: No tokens => list top-level commands in pages of 10
     if (!tokens || tokens.length === 0) {
       const { items, totalPages } = paginateCommands(allCmds, page, 10);
+
+      // Validate requested page number
+      if (page > totalPages) {
+        return {
+          completed: false,
+          status: `&eInvalid page number.\n&rThere are only ${totalPages} pages available.`,
+        };
+      }
+
       let output = `GENERAL HELP | [Page ${page}/${totalPages}]\n`;
       output += "For more info on a specific command, type help command-name\n\n";
       items.forEach((c) => {
@@ -121,3 +129,4 @@ export const helpCommand: Command = {
     return { completed: true, status: helpText };
   },
 };
+
