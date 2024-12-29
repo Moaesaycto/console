@@ -109,12 +109,12 @@ export const helpCommand: Command = {
       }
 
       let output = `GENERAL HELP | [Page ${page}/${totalPages}]\n`;
-      output += "For more info on a specific command, type help command-name\n\n";
+      output += "&sFor more info on a specific command, type help command-name&r\n\n";
       items.forEach((c) => {
         output += `${c.name.padEnd(24, ".")}${c.description}\n`;
       });
       if (totalPages > 1) {
-        output += `\nUse --page=X to see other pages.\n`;
+        output += `\n&sUse --page=X to see other pages.&r\n`;
       }
       return { completed: true, status: output };
     }
@@ -122,7 +122,7 @@ export const helpCommand: Command = {
     // CASE B: "help someCommand [subCommand]"
     const found = findCommandChain(tokens, allCmds);
     if (!found) {
-      return { completed: false, status: `Command not found: ${tokens.join(" ")}` };
+      return { completed: false, status: `&eNo command by the name: ${tokens.join(" ")}&r` };
     }
 
     const helpText = buildCommandHelp(found);
