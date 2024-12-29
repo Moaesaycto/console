@@ -121,7 +121,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
         return;
       } else if (e.key === "Escape") {
         e.preventDefault();
-        setShowSuggestions(false); // Hide suggestions on Escape or Right Arrow
+        setShowSuggestions(false); // Hide suggestions on Escape
         return;
       } else if (e.key === "Tab" || e.key === "Enter" || e.key === "ArrowRight") {
         e.preventDefault();
@@ -144,28 +144,37 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
     }
   }
 
+
   function navigateHistory(direction: "older" | "newer") {
     let newIndex = historyIndex;
-  
+
     if (direction === "older") {
-      newIndex = newIndex === -1 ? commandHistory.length - 1 : newIndex - 1;
-      newIndex = Math.max(newIndex, 0);
-    } else {
-      newIndex = newIndex + 1;
-      if (newIndex >= commandHistory.length) {
-        newIndex = -1;
+      // Move to older commands
+      if (newIndex === -1 && commandHistory.length > 0) {
+        newIndex = commandHistory.length - 1; // Start at the newest command
+      } else {
+        newIndex = Math.max(newIndex - 1, 0); // Go back in history, stop at the first command
+      }
+    } else if (direction === "newer") {
+      // Move to newer commands
+      if (newIndex !== -1) {
+        newIndex = Math.min(newIndex + 1, commandHistory.length - 1); // Go forward, stop at the newest command
+        if (newIndex === commandHistory.length - 1) {
+          newIndex = -1; // Exit history navigation at the newest entry
+        }
       }
     }
-  
+
     setHistoryIndex(newIndex);
-  
+
     if (newIndex === -1) {
-      setInput(""); // Explicitly set to an empty string when index is invalid
+      setInput(""); // Reset to empty input when exiting history navigation
     } else {
-      setInput(commandHistory[newIndex] || ""); // Ensure fallback to an empty string
+      setInput(commandHistory[newIndex] || ""); // Load the command at the current index
     }
   }
-  
+
+
 
   function autoCompleteSuggestion() {
     if (!suggestions.length) return;
@@ -265,50 +274,50 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
       </div>
 
       <div style={getInputContainerStyle(finalTheme)}>
-  <form
-    style={{ flexGrow: 1, display: "flex", alignItems: "center" }}
-    onSubmit={handleSubmit}
-  >
-    <div style={{ position: "relative", width: "100%", marginRight: "8px" }}>
-      <input
-        ref={inputRef}
-        type="text"
-        value={input}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-        style={{ ...getInputStyle(finalTheme) }} // Added marginRight for spacing
-        placeholder={truncatedPlaceholder}
-        autoComplete="off"
-        spellCheck="false"
-        autoCorrect="off"
-        autoCapitalize="none"
-      />
-      {isFocused && ghostedText && (
-        <span style={{ ...getGhostStyle(finalTheme), whiteSpace: "pre-wrap" }}>
-          {input}
-          <span style={{ opacity: 0.5 }}>{ghostedText}</span>
-        </span>
-      )}
-    </div>
+        <form
+          style={{ flexGrow: 1, display: "flex", alignItems: "center" }}
+          onSubmit={handleSubmit}
+        >
+          <div style={{ position: "relative", width: "100%", marginRight: "8px" }}>
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              style={{ ...getInputStyle(finalTheme) }}
+              placeholder={truncatedPlaceholder}
+              autoComplete="off"
+              spellCheck="false"
+              autoCorrect="off"
+              autoCapitalize="none"
+            />
+            {isFocused && ghostedText && (
+              <span style={{ ...getGhostStyle(finalTheme), whiteSpace: "pre-wrap" }}>
+                {input}
+                <span style={{ opacity: 0.5 }}>{ghostedText}</span>
+              </span>
+            )}
+          </div>
 
-    <button type="submit" style={getRunButtonStyle(finalTheme)}>
-      {runButton}
-    </button>
-  </form>
+          <button type="submit" style={getRunButtonStyle(finalTheme)}>
+            {runButton}
+          </button>
+        </form>
 
-  {isFocused && showSuggestions && suggestions.length > 0 && (
-    <SuggestionBox
-      suggestions={suggestions}
-      suggestionIndex={suggestionIndex}
-      setSuggestionIndex={setSuggestionIndex}
-      onSuggestionSelect={handleSuggestionSelect}
-      theme={finalTheme}
-      maxVisibleSuggestions={3}
-    />
-  )}
-</div>
+        {isFocused && showSuggestions && suggestions.length > 0 && (
+          <SuggestionBox
+            suggestions={suggestions}
+            suggestionIndex={suggestionIndex}
+            setSuggestionIndex={setSuggestionIndex}
+            onSuggestionSelect={handleSuggestionSelect}
+            theme={finalTheme}
+            maxVisibleSuggestions={3}
+          />
+        )}
+      </div>
 
     </div>
   );
