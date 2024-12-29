@@ -149,10 +149,10 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style }) => 
 
   function autoCompleteSuggestion() {
     if (!suggestions.length) return;
-  
+
     const splitted = input.split(" ");
     const endsWithSpace = input.endsWith(" ");
-  
+
     if (endsWithSpace) {
       setInput(input + suggestions[suggestionIndex] + " ");
     } else {
@@ -163,11 +163,11 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style }) => 
         setInput(suggestions[suggestionIndex] + " ");
       }
     }
-  
+
     setShowSuggestions(false);
     setSuggestions([]);
   }
-  
+
 
   function updateSuggestions(currentInput: string) {
     if (!currentInput) {
@@ -176,23 +176,23 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style }) => 
       setSuggestionIndex(0);
       return;
     }
-  
+
     const endsWithSpace = currentInput.endsWith(" ");
     const tokens = currentInput.trim().split(" ").filter((t) => t !== "");
-  
+
     // If input ends with a space, user may be completing an argument or expecting the next
     if (endsWithSpace) {
       const foundCmd = walkChain(tokens, commands);
-  
+
       if (!foundCmd) {
         // No command matched, do not suggest anything
         setSuggestions([]);
         setShowSuggestions(false);
         return;
       }
-  
+
       const remainingTokens = tokens.slice(tokens.indexOf(foundCmd.name) + 1);
-  
+
       if (foundCmd.autoComplete) {
         const customSuggestions = foundCmd.autoComplete(remainingTokens);
         if (customSuggestions.length === 0) {
@@ -205,7 +205,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style }) => 
         }
         return;
       }
-  
+
       if (foundCmd.subCommands && foundCmd.subCommands.length > 0) {
         const filteredSubCommands = foundCmd.subCommands
           .map((sub) => sub.name)
@@ -214,7 +214,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style }) => 
         setShowSuggestions(filteredSubCommands.length > 0);
         return;
       }
-  
+
       // No further suggestions
       setSuggestions([]);
       setShowSuggestions(false);
@@ -223,85 +223,88 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style }) => 
       // User is typing the last token, suggest completions based on partial match
       const lastToken = tokens[tokens.length - 1];
       const priorTokens = tokens.slice(0, -1);
-  
+
       if (priorTokens.length === 0) {
         // Suggest top-level commands matching the partial last token
         const filteredCommands = commands
           .map((c) => c.name)
           .filter((name) => name.startsWith(lastToken));
-  
+
         if (filteredCommands.length === 1 && filteredCommands[0] === lastToken) {
           // If only one command matches exactly, do not show suggestions
           setSuggestions([]);
           setShowSuggestions(false);
           return;
         }
-  
+
         setSuggestions(filteredCommands);
         setShowSuggestions(filteredCommands.length > 0);
         return;
       }
-  
+
       const foundCmd = walkChain(priorTokens, commands);
-  
+
       if (!foundCmd) {
         // Partial or invalid command, do not suggest anything
         setSuggestions([]);
         setShowSuggestions(false);
         return;
       }
-  
+
       if (foundCmd.autoComplete) {
         const customSuggestions = foundCmd
           .autoComplete(priorTokens.slice(foundCmd.name ? 1 : 0))
           .filter((s) => s.startsWith(lastToken));
-  
+
         if (customSuggestions.length === 1 && customSuggestions[0] === lastToken) {
           // If only one match remains and it matches the input, hide suggestions
           setSuggestions([]);
           setShowSuggestions(false);
           return;
         }
-  
+
         setSuggestions(customSuggestions);
         setShowSuggestions(customSuggestions.length > 0);
         return;
       }
-  
+
       if (foundCmd.subCommands && foundCmd.subCommands.length > 0) {
         const filteredSubCommands = foundCmd.subCommands
           .map((sub) => sub.name)
           .filter((name) => name.startsWith(lastToken));
-  
+
         if (filteredSubCommands.length === 1 && filteredSubCommands[0] === lastToken) {
           // If only one match remains and it matches the input, hide suggestions
           setSuggestions([]);
           setShowSuggestions(false);
           return;
         }
-  
+
         setSuggestions(filteredSubCommands);
         setShowSuggestions(filteredSubCommands.length > 0);
         return;
       }
-  
+
       // No suggestions if no subcommands or autoComplete
       setSuggestions([]);
       setShowSuggestions(false);
       return;
     }
   }
-  
+
 
   let ghostedText = "";
   if (showSuggestions && suggestions.length > 0 && input) {
-    const splitted = input.split(" ");
-    const lastToken = splitted[splitted.length - 1] || "";
     const suggestion = suggestions[suggestionIndex];
+    const trimmedInput = input.trimEnd();
+    const lastSpaceIndex = trimmedInput.lastIndexOf(" ");
+    const lastToken = trimmedInput.slice(lastSpaceIndex + 1);
+
     if (suggestion.startsWith(lastToken)) {
       ghostedText = suggestion.slice(lastToken.length);
     }
   }
+
 
   function parseLine(line: string): ColorSegment[] {
     return parseColorTokens(line, finalTheme.textColor!);
@@ -461,7 +464,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style }) => 
               autoComplete="off"
             />
             {ghostedText && (
-              <span style={ghostStyle}>
+              <span style={{ ...ghostStyle, whiteSpace: "pre-wrap" }}>
                 {input}
                 <span style={{ opacity: 0.5 }}>{ghostedText}</span>
               </span>
