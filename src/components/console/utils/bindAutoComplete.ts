@@ -1,53 +1,78 @@
 import { Command } from "../types";
 
 export function bindAutoComplete(commands: Command[]): (args: string[]) => string[] {
-  return (args: string[]) => {
-    // If no arguments provided, suggest all top-level commands
-    if (args.length === 0) {
-      return commands.map((cmd) => cmd.name);
-    }
-
-    // Helper function: Recursively find matching subcommands
-    function findSubCommands(tokens: string[], commandList: Command[]): Command[] | null {
-      if (!tokens.length) return commandList; // No tokens left, return all commands at this level
-
-      const [currentToken, ...remainingTokens] = tokens;
-      const matchingCommand = commandList.find((cmd) => cmd.name === currentToken);
-
-      if (!matchingCommand) {
-        // No matching command found at this level
-        return null;
+    return (args: string[]) => {
+      // If no arguments provided, suggest all top-level commands
+      if (args.length === 0) {
+        return commands.map((cmd) => cmd.name);
       }
 
-      if (remainingTokens.length === 0) {
-        // If no more tokens, return its subcommands (if any)
-        return matchingCommand.subCommands || [];
+      // Helper function: Recursively find matching subcommands
+      function findSubCommands(tokens: string[], commandList: Command[]): Command[] | null {
+        if (!tokens.length) return commandList; // No tokens left, return all commands at this level
+      
+        const [currentToken, ...remainingTokens] = tokens;
+      
+        const matchingCommand = commandList.find((cmd) => cmd.name === currentToken);
+      
+        if (!matchingCommand) {
+          // No matching command found at this level
+          return commandList;
+        }
+      
+        if (!remainingTokens.length) {
+          // If no more tokens, return its subcommands (if any)
+          return matchingCommand.subCommands || [];
+        }
+      
+        // Recursively process remaining tokens
+        return findSubCommands(remainingTokens, matchingCommand.subCommands || []);
       }
+      
+  
+      // Traverse recursively to find matching commands or subcommands
+      const tokens = args;
 
-      // Recursively process remaining tokens
-      return findSubCommands(remainingTokens, matchingCommand.subCommands || []);
-    }
-
-    // Traverse recursively to find matching commands or subcommands
-    const tokens = args;
-    const subCommands = findSubCommands(tokens, commands);
-
-    if (subCommands) {
-      return subCommands.map((sub) => sub.name);
-    }
-
-    // Check if the command is fully typed and has no subcommands
-    const lastToken = tokens[tokens.length - 1];
-    const validCommand = commands.find((cmd) => cmd.name === lastToken);
-
-    if (validCommand && (!validCommand.subCommands || validCommand.subCommands.length === 0)) {
-      // Fully typed command with no subcommands; stop suggesting
+    if (!isCommandChainValid(tokens.slice(0, -1), commands)) {
       return [];
     }
 
-    // Otherwise, suggest top-level commands that match the last token
-    return commands
-      .map((cmd) => cmd.name)
-      .filter((name) => name.startsWith(lastToken));
-  };
-}
+      const subCommands = findSubCommands(tokens, commands);
+  
+      if (subCommands) {
+        return subCommands.map((sub) => sub.name);
+      }
+  
+      // If no subcommands and the current token matches a valid command, return no suggestions
+      const lastToken = tokens[tokens.length - 1] || ""; // Ensure non-empty token
+      const validCommand = commands.find((cmd) => cmd.name === lastToken);
+  
+      if (validCommand && (!validCommand.subCommands || validCommand.subCommands.length === 0)) {
+        return [];
+      }
+  
+      // Otherwise, suggest top-level commands that match the last token
+      return commands
+        .map((cmd) => cmd.name)
+        .filter((name) => name && name.startsWith(lastToken));
+    };
+  }
+
+
+  function isCommandChainValid(tokens: string[], commandList: Command[]): boolean {
+    if (!tokens.length) return true;
+
+    const [currentToken, ...remainingTokens] = tokens;
+
+    const matchingCommand = commandList.find((cmd) => cmd.name === currentToken);
+
+    if (!matchingCommand) {
+      return false; // Invalid token breaks the chain
+    }
+
+    if (!remainingTokens.length) {
+      return true; // Reached the end, and the chain is valid
+    }
+
+    return isCommandChainValid(remainingTokens, matchingCommand.subCommands || []);
+  }

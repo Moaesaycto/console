@@ -136,37 +136,46 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
 
   function autoCompleteSuggestion() {
     if (!suggestions.length) return;
-
+  
     const splitted = input.split(" ");
     const endsWithSpace = input.endsWith(" ");
-
+    const selectedSuggestion = suggestions[suggestionIndex];
+  
+    if (!selectedSuggestion) {
+      // Ensure a valid suggestion exists
+      return;
+    }
+  
     if (endsWithSpace) {
-      setInput(input + suggestions[suggestionIndex] + " ");
+      setInput(input + selectedSuggestion + " ");
     } else {
       if (splitted.length > 0) {
-        splitted[splitted.length - 1] = suggestions[suggestionIndex];
+        splitted[splitted.length - 1] = selectedSuggestion;
         setInput(splitted.join(" ") + " ");
       } else {
-        setInput(suggestions[suggestionIndex] + " ");
+        setInput(selectedSuggestion + " ");
       }
     }
-
+  
     setShowSuggestions(false);
     setSuggestions([]);
   }
+  
 
 
   let ghostedText = "";
-  if (showSuggestions && suggestions.length > 0 && input) {
-    // Match the entire input string including trailing spaces
-    const lastSpaceIndex = input.lastIndexOf(" ");
-    const lastToken = input.slice(lastSpaceIndex + 1); // Preserve spaces before lastToken
-    const suggestion = suggestions[suggestionIndex];
+if (showSuggestions && suggestions.length > 0 && input.trim()) {
+  // Match the last token of the input
+  const lastSpaceIndex = input.lastIndexOf(" ");
+  const lastToken = lastSpaceIndex === -1 ? input : input.slice(lastSpaceIndex + 1);
+  const suggestion = suggestions[suggestionIndex];
 
-    if (suggestion.startsWith(lastToken)) {
-      ghostedText += suggestion.slice(lastToken.length);
-    }
+  if (suggestion && lastToken !== undefined && suggestion.startsWith(lastToken)) {
+    ghostedText = suggestion.slice(lastToken.length);
   }
+}
+
+
 
 
   function parseLine(line: string): ColorSegment[] {
