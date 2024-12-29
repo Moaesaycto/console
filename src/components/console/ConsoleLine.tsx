@@ -462,6 +462,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style }) => 
               style={inputStyle}
               placeholder="Type a command..."
               autoComplete="off"
+              spellCheck="false"
             />
             {ghostedText && (
               <span style={{ ...ghostStyle, whiteSpace: "pre-wrap" }}>
