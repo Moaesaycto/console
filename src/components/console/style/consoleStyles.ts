@@ -1,12 +1,12 @@
 import { CSSProperties } from "react";
 import { ConsoleTheme } from "../types";
+import { isColorDark } from "../utils/colorCorrection";
 
 export const getConsoleContainerStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
   display: "flex",
   flexDirection: "column",
   width: "100%",
   height: "100%",
-  border: "1px solid #ccc",
   fontFamily: finalTheme.font,
   fontSize: finalTheme.fontSize,
   lineHeight: finalTheme.lineHeight,
@@ -23,7 +23,6 @@ export const getOutputAreaStyle = (finalTheme: ConsoleTheme): CSSProperties => (
 });
 
 export const getInputContainerStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
-  borderTop: "1px solid #ccc",
   backgroundColor: finalTheme.backgroundColor?.secondary,
   padding: "4px",
   display: "flex",
@@ -43,18 +42,24 @@ export const getInputStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
   lineHeight: finalTheme.lineHeight,
 });
 
-export const getRunButtonStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
-  padding: "6px 12px",
-  border: "none",
-  backgroundColor: finalTheme.textColor?.primary,
-  color: "#fff",
-  marginLeft: "8px",
-  cursor: "pointer",
-  borderRadius: "4px",
-  fontFamily: finalTheme.font,
-  fontSize: finalTheme.fontSize,
-  lineHeight: finalTheme.lineHeight,
-});
+export const getRunButtonStyle = (finalTheme: ConsoleTheme): CSSProperties => {
+  const backgroundColor = finalTheme.textColor?.primary || "#349E44"; // Default background color
+  const textColor = isColorDark(backgroundColor) ? "#FFFFFF" : "#000000"; // Choose appropriate text color
+
+  return {
+    padding: "6px 12px",
+    border: "none",
+    backgroundColor,
+    color: textColor,
+    marginLeft: "8px",
+    cursor: "pointer",
+    borderRadius: "4px",
+    fontFamily: finalTheme.font,
+    fontSize: finalTheme.fontSize,
+    lineHeight: finalTheme.lineHeight,
+    fontWeight: "bold",
+  };
+};
 
 export const getSuggestionsBoxStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
   position: "absolute",

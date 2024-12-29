@@ -1,5 +1,5 @@
 import { ConsoleLine } from "./components/console/ConsoleLine";
-import { ConsoleTheme } from "./components/console/utils/theme";
+import { ConsoleTheme, mergeTheme } from "./components/console/utils/theme";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -15,11 +15,17 @@ import { rpsCommand } from "./commands/rockPaperScissorsCommand";
 import { headsOrTailsCommand } from "./commands/headsOrTailsCommand";
 import { buildComputerCommand } from "./commands/buildComputer";
 
+import { themes } from "./themes/presets";
+import { useState } from "react";
+import ThemeSelector from "./themes/ThemeSelector";
+
 /* This is an example of updating the theme with a custom font size. Normally it's 14px, but for
 this demonstration, it has been changed to 16px */
 const partialTheme: ConsoleTheme = {
   fontSize: "16px",
 };
+
+void partialTheme;
 
 const startMessage: string = `Initiating session...
 Console loaded successfully!
@@ -65,6 +71,12 @@ const colorCodes = [
 ]
 
 function App() {
+  const [currentTheme, setCurrentTheme] = useState<string>("darkMode");
+
+  const handleThemeChange = (themeName: string) => {
+    setCurrentTheme(themeName);
+  };
+  
   return (
     <div
       style={{
@@ -76,7 +88,7 @@ function App() {
       }}
     >
       <Header />
-      <div style={{ flex: "1", paddingTop: "60px", maxWidth: "1280px", alignSelf: "center" }}>
+      <div style={{ flex: "1", paddingTop: "60px", maxWidth: "1280px", alignSelf: "center"}}>
         <p
           style={{
             width: "80%",
@@ -108,15 +120,19 @@ function App() {
           . There, you should be able to find a tutorial on how to implement your own functions and styles to it, along with the basic implementation you see here on
           this site! Type <code style={codeStyle}>help</code> below to learn about each command.
         </p>
+        <div style={{ display: "flex", justifyContent: "center", margin: "20px 0" }}>
+          <ThemeSelector currentTheme={currentTheme} themes={themes} onThemeChange={handleThemeChange} />
+        </div>
         <div
           style={{
             width: "80%",
             height: "600px",
             margin: "20px auto",
             backgroundColor: "#222",
+            border: "1px solid #ccc",
           }}
         >
-          <ConsoleLine commands={commands} style={partialTheme} startMessage={startMessage} />
+          <ConsoleLine commands={commands} style={mergeTheme(themes[currentTheme])} startMessage={startMessage} />
         </div>
         <br />
         <div style={{ width: "80%", margin: "20px auto", color: "#fff" }}>

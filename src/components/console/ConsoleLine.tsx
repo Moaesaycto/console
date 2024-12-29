@@ -115,8 +115,6 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
       }
     }
   }
-  
-  
 
 
   function navigateHistory(direction: "older" | "newer") {

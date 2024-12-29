@@ -29,6 +29,7 @@ export interface Command {
 }
 
 export interface ConsoleTheme {
+  name?: string;
   font?: string;
   fontSize?: string;
   lineHeight?: string;
