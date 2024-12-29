@@ -261,50 +261,51 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
       </div>
 
       <div style={getInputContainerStyle(finalTheme)}>
-        <form
-          style={{ flexGrow: 1, display: "flex", alignItems: "center" }}
-          onSubmit={handleSubmit}
-        >
-          <div style={{ position: "relative", width: "100%" }}>
-            <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              style={getInputStyle(finalTheme)}
-              placeholder={truncatedPlaceholder} // Updated placeholder
-              autoComplete="off"
-              spellCheck="false"
-              autoCorrect="off"
-              autoCapitalize="none"
-            />
-            {isFocused && ghostedText && (
-              <span style={{ ...getGhostStyle(finalTheme), whiteSpace: "pre-wrap" }}>
-                {input}
-                <span style={{ opacity: 0.5 }}>{ghostedText}</span>
-              </span>
-            )}
-          </div>
+  <form
+    style={{ flexGrow: 1, display: "flex", alignItems: "center" }}
+    onSubmit={handleSubmit}
+  >
+    <div style={{ position: "relative", width: "100%", marginRight: "8px" }}>
+      <input
+        ref={inputRef}
+        type="text"
+        value={input}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        style={{ ...getInputStyle(finalTheme) }} // Added marginRight for spacing
+        placeholder={truncatedPlaceholder}
+        autoComplete="off"
+        spellCheck="false"
+        autoCorrect="off"
+        autoCapitalize="none"
+      />
+      {isFocused && ghostedText && (
+        <span style={{ ...getGhostStyle(finalTheme), whiteSpace: "pre-wrap" }}>
+          {input}
+          <span style={{ opacity: 0.5 }}>{ghostedText}</span>
+        </span>
+      )}
+    </div>
 
-          <button type="submit" style={getRunButtonStyle(finalTheme)}>
-            {runButton}
-          </button>
-        </form>
+    <button type="submit" style={getRunButtonStyle(finalTheme)}>
+      {runButton}
+    </button>
+  </form>
 
-        {isFocused && showSuggestions && suggestions.length > 0 && (
-          <SuggestionBox
-            suggestions={suggestions}
-            suggestionIndex={suggestionIndex}
-            setSuggestionIndex={setSuggestionIndex}
-            onSuggestionSelect={handleSuggestionSelect}
-            theme={finalTheme}
-            maxVisibleSuggestions={3}
-          />
-        )}
-      </div>
+  {isFocused && showSuggestions && suggestions.length > 0 && (
+    <SuggestionBox
+      suggestions={suggestions}
+      suggestionIndex={suggestionIndex}
+      setSuggestionIndex={setSuggestionIndex}
+      onSuggestionSelect={handleSuggestionSelect}
+      theme={finalTheme}
+      maxVisibleSuggestions={3}
+    />
+  )}
+</div>
+
     </div>
   );
 };
