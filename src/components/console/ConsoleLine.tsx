@@ -295,13 +295,13 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style }) => 
 
   let ghostedText = "";
   if (showSuggestions && suggestions.length > 0 && input) {
+    // Match the entire input string including trailing spaces
+    const lastSpaceIndex = input.lastIndexOf(" ");
+    const lastToken = input.slice(lastSpaceIndex + 1); // Preserve spaces before lastToken
     const suggestion = suggestions[suggestionIndex];
-    const trimmedInput = input.trimEnd();
-    const lastSpaceIndex = trimmedInput.lastIndexOf(" ");
-    const lastToken = trimmedInput.slice(lastSpaceIndex + 1);
 
     if (suggestion.startsWith(lastToken)) {
-      ghostedText = suggestion.slice(lastToken.length);
+      ghostedText += suggestion.slice(lastToken.length);
     }
   }
 
