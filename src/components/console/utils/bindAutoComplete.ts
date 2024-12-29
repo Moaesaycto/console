@@ -7,6 +7,11 @@ export function bindAutoComplete(commands: Command[]): (args: string[]) => strin
       return commands.map((cmd) => cmd.name);
     }
 
+    // Fix for invalid suggestions after incorrect argument
+    if (args[args.length - 1] === "" && !isCommandChainValid(args, commands) && args.length > 2) {
+      return [];
+    }
+
     // Recursively find matching subcommands
     function findSubCommands(tokens: string[], commandList: Command[]): Command[] | null {
       if (!tokens.length) return commandList; // No tokens left, return all commands at this level

@@ -127,6 +127,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
       } else if (e.key === "Tab" || e.key === "Enter" || e.key === "ArrowRight") {
         e.preventDefault();
         autoCompleteSuggestion();
+        setSuggestionIndex(0);
         return;
       }
     } else {

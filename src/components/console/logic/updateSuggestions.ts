@@ -18,6 +18,10 @@ export function updateSuggestions(
   const endsWithSpace = currentInput.endsWith(" ");
   const tokens = currentInput.trim().split(" ").filter((t) => t !== "");
 
+  if (tokens[0] === "help" && endsWithSpace) {
+    tokens.push("");
+  }
+
   // Handle the case for "help" or any fully-typed command without a trailing space
   if (tokens.length === 1 && !endsWithSpace) {
     const firstToken = tokens[0];
