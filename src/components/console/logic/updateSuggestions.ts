@@ -97,6 +97,13 @@ export function updateSuggestions(
         .map((sub) => sub.name)
         .filter((name) => name && name.startsWith(lastToken));
 
+      // Hide suggestions if the subcommand is fully typed and unambiguous
+      if (filteredSubCommands.length === 1 && filteredSubCommands[0] === lastToken) {
+        setSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
+
       setSuggestions(filteredSubCommands);
       setShowSuggestions(filteredSubCommands.length > 0);
       return;
@@ -106,6 +113,13 @@ export function updateSuggestions(
       const customSuggestions = foundCmd
         .autoComplete(tokens.slice(1))
         .filter((s) => s.toLowerCase().startsWith(lastToken.toLowerCase()));
+
+      // Hide suggestions if the auto-complete result is fully typed and unambiguous
+      if (customSuggestions.length === 1 && customSuggestions[0].toLowerCase() === lastToken.toLowerCase()) {
+        setSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
 
       setSuggestions(customSuggestions);
       setShowSuggestions(customSuggestions.length > 0);
