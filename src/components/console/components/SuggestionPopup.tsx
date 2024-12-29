@@ -1,27 +1,24 @@
-import React from "react";
-import {
-  getSuggestionsBoxStyle,
-  getSuggestionItemStyle,
-} from "../style/consoleStyles";
+import React, { useRef } from "react";
+import { getSuggestionsBoxStyle, getSuggestionItemStyle } from "../style/consoleStyles";
+import { ConsoleTheme } from "../types";
+import { CSSProperties } from "react";
 
 interface SuggestionBoxProps {
   suggestions: string[];
   suggestionIndex: number;
   setSuggestionIndex: (index: number | ((prevIndex: number) => number)) => void;
   onSuggestionSelect: (suggestion: string) => void;
-  theme: any; // Replace `any` with your theme type
-  maxVisibleSuggestions?: number; // Configurable max visible suggestions
+  theme: ConsoleTheme;
+  maxVisibleSuggestions?: number;
 }
-
-import { CSSProperties } from "react";
 
 const arrowStyle: CSSProperties = {
   textAlign: "center",
   cursor: "pointer",
-  padding: "2px 0", // Reduce padding for smaller height
-  fontSize: "12px", // Smaller font size for arrows
+  padding: "0px 0",
+  fontSize: "12px",
   userSelect: "none",
-  lineHeight: "1", // Keep the content vertically aligned
+  lineHeight: "1",
 };
 
 const SuggestionBox: React.FC<SuggestionBoxProps> = ({
@@ -33,6 +30,7 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
   maxVisibleSuggestions = 3, // Default to 3 if not provided
 }) => {
   const totalSuggestions = suggestions.length;
+  const scrollIntervalRef = useRef<number | null>(null); // For controlling the scroll interval
 
   // Determine the range of visible suggestions
   const visibleStart = Math.max(
@@ -54,6 +52,26 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
     setSuggestionIndex((prev) => (prev === totalSuggestions - 1 ? 0 : prev + 1));
   };
 
+  // Start scrolling in a given direction
+  const startScroll = (direction: "up" | "down") => {
+    if (scrollIntervalRef.current !== null) return; // Prevent multiple intervals
+    scrollIntervalRef.current = window.setInterval(() => {
+      if (direction === "up") {
+        handleUp();
+      } else {
+        handleDown();
+      }
+    }, 100); // Scroll every 100ms
+  };
+
+  // Stop scrolling
+  const stopScroll = () => {
+    if (scrollIntervalRef.current !== null) {
+      clearInterval(scrollIntervalRef.current);
+      scrollIntervalRef.current = null;
+    }
+  };
+
   return (
     <div style={{ position: "relative", ...getSuggestionsBoxStyle(theme) }}>
       {/* Arrow Up */}
@@ -61,8 +79,10 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
         <div
           style={{
             ...arrowStyle,
-            color: theme.textColor?.primary || "black", // Use theme color
+            color: theme.textColor?.primary || theme.textColor?.default || "white",
           }}
+          onMouseEnter={() => startScroll("up")} // Keep the scrolling hover
+          onMouseLeave={stopScroll}
           onMouseDown={(e) => {
             e.preventDefault();
             handleUp();
@@ -79,13 +99,14 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
           <div
             key={sug}
             style={getSuggestionItemStyle(theme, absoluteIndex === suggestionIndex)}
-            onMouseEnter={() => setSuggestionIndex(absoluteIndex)}
             onMouseDown={(e) => {
               e.preventDefault();
-              onSuggestionSelect(sug);
+              onSuggestionSelect(sug); // Select suggestion and reset state
             }}
           >
-            {sug}
+            <span style={{ color: theme.textColor?.primary || theme.textColor?.default || "white" }}>
+              {sug}
+            </span>
           </div>
         );
       })}
@@ -95,8 +116,10 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
         <div
           style={{
             ...arrowStyle,
-            color: theme.textColor?.primary || "black", // Use theme color
+            color: theme.textColor?.primary || theme.textColor?.default || "white",
           }}
+          onMouseEnter={() => startScroll("down")} // Keep the scrolling hover
+          onMouseLeave={stopScroll}
           onMouseDown={(e) => {
             e.preventDefault();
             handleDown();
