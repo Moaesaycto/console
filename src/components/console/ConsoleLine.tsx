@@ -146,6 +146,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
 
   function navigateHistory(direction: "older" | "newer") {
     let newIndex = historyIndex;
+  
     if (direction === "older") {
       newIndex = newIndex === -1 ? commandHistory.length - 1 : newIndex - 1;
       newIndex = Math.max(newIndex, 0);
@@ -155,13 +156,16 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
         newIndex = -1;
       }
     }
+  
     setHistoryIndex(newIndex);
+  
     if (newIndex === -1) {
-      setInput("");
+      setInput(""); // Explicitly set to an empty string when index is invalid
     } else {
-      setInput(commandHistory[newIndex]);
+      setInput(commandHistory[newIndex] || ""); // Ensure fallback to an empty string
     }
   }
+  
 
   function autoCompleteSuggestion() {
     if (!suggestions.length) return;
