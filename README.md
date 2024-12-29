@@ -12,7 +12,10 @@ If you like what I do, consider visiting my website [here](https://moaesaycto.gi
 - [Custom Console](#custom-console)
 - [Table of Contents](#table-of-contents)
   - [Setting up](#setting-up)
+  - [Adding a Starting Message](#adding-a-starting-message)
+    - [Example](#example)
   - [Adding Custom Themes](#adding-custom-themes)
+    - [Example](#example-1)
   - [Custom Commands](#custom-commands)
     - [1. **Understand the `Command` Interface**](#1-understand-the-command-interface)
     - [2. **Example of a Simple Command**](#2-example-of-a-simple-command)
@@ -42,11 +45,37 @@ For a working example, check out the [demo here](https://moaesaycto.github.io/co
 
 ---
 
+## Adding a Starting Message
+
+You can define a custom starting message to display when the console is loaded. This is useful for showing instructions, welcome text, or system information.
+
+### Example
+
+```tsx
+const startMessage: string = `
+Welcome to the Custom Console!
+Type 'help' to see available commands.
+
+Use 'echo' to repeat messages, 'math' to evaluate expressions, or 'time' to check the current date and time.
+`;
+
+<ConsoleLine commands={commands} style={theme} startMessage={startMessage} />
+```
+
+- Use `\n` to add line breaks in the starting message.
+- Use **color codes** (if supported by your console implementation) to style the message:
+  - `&r` for primary color
+  - `&s` for secondary color
+  - `&w` for warning
+  - `&e` for error
+
+---
+
 ## Adding Custom Themes
 
 The default theme mimics an old-school console. You can customize the theme by modifying or overriding its properties.
 
-Example:
+### Example
 
 ```tsx
 import { ConsoleTheme } from "./components/console/utils/theme";
