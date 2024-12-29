@@ -23,6 +23,8 @@ import {
   getSuggestionsBoxStyle,
   getGhostStyle
 } from "./style/consoleStyles";
+import { bindAutoComplete } from "./utils/bindAutoComplete";
+import { helpCommand } from "./commands/builtInCommands";
 
 
 interface ConsoleLineProps {
@@ -34,6 +36,8 @@ interface ConsoleLineProps {
 
 export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, startMessage }) => {
   commands = [...builtInCommands, ...commands];
+
+  helpCommand.autoComplete = bindAutoComplete(commands);
 
   const finalTheme = mergeTheme(style);
 

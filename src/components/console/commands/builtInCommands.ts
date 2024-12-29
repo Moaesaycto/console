@@ -1,4 +1,5 @@
 import { Command, CommandContext } from "../types";
+import { bindAutoComplete } from "../utils/bindAutoComplete";
 
 const HELP_PAGE_SIZE = 10;
 
@@ -92,13 +93,12 @@ export const helpCommand: Command = {
   },
   run: (args, params, context: CommandContext) => {
     void args;
-
     const { tokens, page } = params;
     const allCmds = context.allCommands;
 
     // CASE A: No tokens => list top-level commands in pages of 10
     if (!tokens || tokens.length === 0) {
-      const { items, totalPages } = paginateCommands(allCmds, page, 10);
+      const { items, totalPages } = paginateCommands(allCmds, page, HELP_PAGE_SIZE);
 
       // Validate requested page number
       if (page > totalPages) {
@@ -128,5 +128,5 @@ export const helpCommand: Command = {
     const helpText = buildCommandHelp(found);
     return { completed: true, status: helpText };
   },
+  autoComplete: bindAutoComplete([]), // Placeholder; see initialization below
 };
-
