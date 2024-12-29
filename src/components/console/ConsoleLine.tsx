@@ -7,6 +7,7 @@ import React, {
   FormEvent,
   ReactNode,
 } from "react";
+import { truncateTextToFit } from "./utils/textUtils";
 import { Command } from "./types";
 import { parseColorTokens, ColorSegment } from "./utils/colorParsing";
 import { ConsoleTheme, mergeTheme } from "./utils/theme";
@@ -61,6 +62,8 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const [truncatedPlaceholder, setTruncatedPlaceholder] = useState(placeholderText);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -74,6 +77,23 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
       setShowSuggestions(false); // Hide suggestions when not focused
     }
   }, [input, isFocused]);
+
+  const updatePlaceholder = () => {
+    if (inputRef.current) {
+      const inputWidth = inputRef.current.getBoundingClientRect().width;
+      const charWidth = 8; // Adjust based on font size and style
+      setTruncatedPlaceholder(truncateTextToFit(placeholderText, inputWidth, charWidth));
+    }
+  };
+
+  useEffect(() => {
+    updatePlaceholder(); // Initial update
+    window.addEventListener("resize", updatePlaceholder);
+
+    return () => {
+      window.removeEventListener("resize", updatePlaceholder);
+    };
+  }, [placeholderText]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -255,9 +275,11 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               style={getInputStyle(finalTheme)}
-              placeholder={placeholderText}
+              placeholder={truncatedPlaceholder} // Updated placeholder
               autoComplete="off"
               spellCheck="false"
+              autoCorrect="off"
+              autoCapitalize="none"
             />
             {isFocused && ghostedText && (
               <span style={{ ...getGhostStyle(finalTheme), whiteSpace: "pre-wrap" }}>
