@@ -51,6 +51,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
   const [history, setHistory] = useState<string[]>(startMessage ? [startMessage] : []);
   const [input, setInput] = useState<string>("");
   const [isFocused, setIsFocused] = useState<boolean>(true);
+  const [savedInput, setSavedInput] = useState<string>("");
 
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
@@ -147,10 +148,11 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
 
   function navigateHistory(direction: "older" | "newer") {
     let newIndex = historyIndex;
-
+  
     if (direction === "older") {
       // Move to older commands
       if (newIndex === -1 && commandHistory.length > 0) {
+        setSavedInput(input); // Save the current input before navigating
         newIndex = commandHistory.length - 1; // Start at the newest command
       } else {
         newIndex = Math.max(newIndex - 1, 0); // Go back in history, stop at the first command
@@ -164,16 +166,15 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
         }
       }
     }
-
+  
     setHistoryIndex(newIndex);
-
+  
     if (newIndex === -1) {
-      setInput(""); // Reset to empty input when exiting history navigation
+      setInput(savedInput); // Restore the saved input when exiting history navigation
     } else {
       setInput(commandHistory[newIndex] || ""); // Load the command at the current index
     }
   }
-
 
 
   function autoCompleteSuggestion() {
