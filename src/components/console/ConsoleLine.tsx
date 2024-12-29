@@ -85,11 +85,11 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
     if (showSuggestions && suggestions.length > 0) {
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        setSuggestionIndex((prev) => Math.min(prev + 1, suggestions.length - 1));
+        setSuggestionIndex((prev) => (prev === suggestions.length - 1 ? 0 : prev + 1));
         return;
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
-        setSuggestionIndex((prev) => Math.max(prev - 1, 0));
+        setSuggestionIndex((prev) => (prev === 0 ? suggestions.length - 1 : prev - 1));
         return;
       } else if (e.key === "Tab" || e.key === "Enter") {
         e.preventDefault();
@@ -111,6 +111,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
       }
     }
   }
+  
 
 
   function navigateHistory(direction: "older" | "newer") {
@@ -267,12 +268,14 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
 
         {showSuggestions && suggestions.length > 0 && (
           <SuggestionBox
-            suggestions={suggestions}
-            suggestionIndex={suggestionIndex}
-            setSuggestionIndex={setSuggestionIndex}
-            onSuggestionSelect={handleSuggestionSelect}
-            theme={finalTheme}
-          />
+          suggestions={suggestions}
+          suggestionIndex={suggestionIndex}
+          setSuggestionIndex={setSuggestionIndex}
+          onSuggestionSelect={handleSuggestionSelect}
+          theme={finalTheme}
+          maxVisibleSuggestions={3} // Set your desired number here
+        />
+        
         )}
       </div>
     </div>
