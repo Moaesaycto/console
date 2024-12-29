@@ -51,7 +51,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
   const [history, setHistory] = useState<string[]>(startMessage ? [startMessage] : []);
   const [input, setInput] = useState<string>("");
   const [isFocused, setIsFocused] = useState<boolean>(true);
-  const [savedInput, setSavedInput] = useState<string>("");
+  const [originalInput, setOriginalInput] = useState<string>("");
 
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
@@ -143,8 +143,8 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
         return;
       }
     }
-  }
-
+  }  
+  
 
   function navigateHistory(direction: "older" | "newer") {
     let newIndex = historyIndex;
@@ -152,29 +152,30 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
     if (direction === "older") {
       // Move to older commands
       if (newIndex === -1 && commandHistory.length > 0) {
-        setSavedInput(input); // Save the current input before navigating
+        setOriginalInput(input); // Store the current input before navigating
         newIndex = commandHistory.length - 1; // Start at the newest command
       } else {
         newIndex = Math.max(newIndex - 1, 0); // Go back in history, stop at the first command
       }
     } else if (direction === "newer") {
       // Move to newer commands
-      if (newIndex !== -1) {
-        newIndex = Math.min(newIndex + 1, commandHistory.length - 1); // Go forward, stop at the newest command
-        if (newIndex === commandHistory.length - 1) {
-          newIndex = -1; // Exit history navigation at the newest entry
-        }
+      if (newIndex === commandHistory.length - 1) {
+        setHistoryIndex(-1); // Exit history navigation
+        setInput(originalInput); // Restore the original input
+        return;
+      } else if (newIndex !== -1) {
+        newIndex = Math.min(newIndex + 1, commandHistory.length - 1); // Move forward, stop at the last command
       }
     }
   
     setHistoryIndex(newIndex);
   
-    if (newIndex === -1) {
-      setInput(savedInput); // Restore the saved input when exiting history navigation
-    } else {
+    if (newIndex !== -1) {
       setInput(commandHistory[newIndex] || ""); // Load the command at the current index
     }
   }
+  
+  
 
 
   function autoCompleteSuggestion() {
