@@ -60,7 +60,7 @@ function App() {
       }}
     >
       <Header />
-      <div style={{ flex: "1", paddingTop: "60px", maxWidth: "1280px", alignSelf: "center"}}>
+      <div style={{ flex: "1", paddingTop: "60px", maxWidth: "1280px", alignSelf: "center" }}>
         <p
           style={{
             width: "80%",

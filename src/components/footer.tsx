@@ -26,7 +26,7 @@ export const Footer = () => {
             <div style={constructionPatternStyle} />
 
             <div style={footerContainerStyle}>
-                <p style={{ fontSize: "20px"}}>
+                <p style={{ fontSize: "20px" }}>
                     Like what I do? Consider checking me out{' '}
                     <a
                         href="https://moaesaycto.github.io"

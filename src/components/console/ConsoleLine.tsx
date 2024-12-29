@@ -48,7 +48,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style }) => 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
