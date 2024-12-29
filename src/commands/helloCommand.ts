@@ -20,7 +20,7 @@ const dayCommand: Command = {
   },
   run: (args, params, context: CommandContext) => {
     void args, context; // Not needed
-    
+
     return {
       completed: true,
       status: `Good day, ${params.name}! (time=${params.time})`,
