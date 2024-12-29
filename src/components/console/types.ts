@@ -1,5 +1,13 @@
 import React from "react";
 
+export interface ThemeColorSet {
+  primary?: string;
+  secondary?: string;
+  warning?: string;
+  error?: string;
+  default?: string; // fallback
+}
+
 export interface CommandContext {
   allCommands: Command[];
   setHistory: React.Dispatch<React.SetStateAction<string[]>>;
@@ -24,12 +32,7 @@ export interface ConsoleTheme {
   font?: string;
   fontSize?: string;
   lineHeight?: string;
-  textColor?: Record<string, string>;
-  backgroundColor?: Record<string, string>;
-  scrollColor?: Record<string, string>;
-}
-
-export interface ConsoleLineProps {
-  commands: Command[];
-  style?: ConsoleTheme;
+  textColor?: ThemeColorSet; // Updated to match theme.ts
+  backgroundColor?: ThemeColorSet; // Also updated for consistency
+  scrollColor?: ThemeColorSet; // Also updated for consistency
 }
