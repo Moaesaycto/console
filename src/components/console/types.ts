@@ -33,7 +33,7 @@ export interface ConsoleTheme {
   font?: string;
   fontSize?: string;
   lineHeight?: string;
-  textColor?: ThemeColorSet; // Updated to match theme.ts
-  backgroundColor?: ThemeColorSet; // Also updated for consistency
-  scrollColor?: ThemeColorSet; // Also updated for consistency
+  textColor?: ThemeColorSet;
+  backgroundColor?: ThemeColorSet;
+  scrollColor?: ThemeColorSet;
 }

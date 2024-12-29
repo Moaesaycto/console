@@ -255,7 +255,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               style={getInputStyle(finalTheme)}
-              placeholder={placeholderText} // Use the custom placeholder text
+              placeholder={placeholderText}
               autoComplete="off"
               spellCheck="false"
             />
@@ -268,7 +268,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
           </div>
 
           <button type="submit" style={getRunButtonStyle(finalTheme)}>
-            {runButton} {/* Use the custom run button */}
+            {runButton}
           </button>
         </form>
 

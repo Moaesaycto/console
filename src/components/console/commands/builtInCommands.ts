@@ -27,7 +27,7 @@ function findCommandChain(tokens: string[], commands: Command[]): Command | null
   return found;
 }
 
-/** Utility: simple pagination for top-level commands, 10 per page */
+/** Pagination for top-level commands, 10 per page */
 function paginateCommands(
   cmds: Command[],
   page: number,
@@ -40,7 +40,7 @@ function paginateCommands(
   return { items, totalPages };
 }
 
-/** Utility: build usage text for a single command */
+/** Build usage text for a single command */
 function buildCommandHelp(cmd: Command) {
   let subcommandsInfo = "";
   if (cmd.subCommands && cmd.subCommands.length > 0) {
@@ -128,5 +128,5 @@ export const helpCommand: Command = {
     const helpText = buildCommandHelp(found);
     return { completed: true, status: helpText };
   },
-  autoComplete: bindAutoComplete([]), // Placeholder; see initialization below
+  autoComplete: bindAutoComplete([]),
 };

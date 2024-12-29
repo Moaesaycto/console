@@ -1,78 +1,73 @@
 import { Command } from "../types";
 
 export function bindAutoComplete(commands: Command[]): (args: string[]) => string[] {
-    return (args: string[]) => {
-      // If no arguments provided, suggest all top-level commands
-      if (args.length === 0) {
-        return commands.map((cmd) => cmd.name);
+  return (args: string[]) => {
+    // If no arguments provided, suggest all top-level commands
+    if (args.length === 0) {
+      return commands.map((cmd) => cmd.name);
+    }
+
+    // Recursively find matching subcommands
+    function findSubCommands(tokens: string[], commandList: Command[]): Command[] | null {
+      if (!tokens.length) return commandList; // No tokens left, return all commands at this level
+
+      const [currentToken, ...remainingTokens] = tokens;
+
+      const matchingCommand = commandList.find((cmd) => cmd.name === currentToken);
+
+      if (!matchingCommand) {
+        return commandList; // May be null in better implementation
       }
 
-      // Helper function: Recursively find matching subcommands
-      function findSubCommands(tokens: string[], commandList: Command[]): Command[] | null {
-        if (!tokens.length) return commandList; // No tokens left, return all commands at this level
-      
-        const [currentToken, ...remainingTokens] = tokens;
-      
-        const matchingCommand = commandList.find((cmd) => cmd.name === currentToken);
-      
-        if (!matchingCommand) {
-          // No matching command found at this level
-          return commandList;
-        }
-      
-        if (!remainingTokens.length) {
-          // If no more tokens, return its subcommands (if any)
-          return matchingCommand.subCommands || [];
-        }
-      
-        // Recursively process remaining tokens
-        return findSubCommands(remainingTokens, matchingCommand.subCommands || []);
+      if (!remainingTokens.length) {
+        return matchingCommand.subCommands || [];
       }
-      
-  
-      // Traverse recursively to find matching commands or subcommands
-      const tokens = args;
+
+      return findSubCommands(remainingTokens, matchingCommand.subCommands || []);
+    }
+
+    const tokens = args;
 
     if (!isCommandChainValid(tokens.slice(0, -1), commands)) {
       return [];
     }
 
-      const subCommands = findSubCommands(tokens, commands);
-  
-      if (subCommands) {
-        return subCommands.map((sub) => sub.name);
-      }
-  
-      // If no subcommands and the current token matches a valid command, return no suggestions
-      const lastToken = tokens[tokens.length - 1] || ""; // Ensure non-empty token
-      const validCommand = commands.find((cmd) => cmd.name === lastToken);
-  
-      if (validCommand && (!validCommand.subCommands || validCommand.subCommands.length === 0)) {
-        return [];
-      }
-  
-      // Otherwise, suggest top-level commands that match the last token
-      return commands
-        .map((cmd) => cmd.name)
-        .filter((name) => name && name.startsWith(lastToken));
-    };
-  }
+    const subCommands = findSubCommands(tokens, commands);
 
-
-  function isCommandChainValid(tokens: string[], commandList: Command[]): boolean {
-    if (!tokens.length) return true;
-
-    const [currentToken, ...remainingTokens] = tokens;
-
-    const matchingCommand = commandList.find((cmd) => cmd.name === currentToken);
-
-    if (!matchingCommand) {
-      return false; // Invalid token breaks the chain
+    if (subCommands) {
+      return subCommands.map((sub) => sub.name);
     }
 
-    if (!remainingTokens.length) {
-      return true; // Reached the end, and the chain is valid
+    // If no subcommands and the current token matches a valid command, return no suggestions
+    const lastToken = tokens[tokens.length - 1] || ""; // Ensure non-empty token
+    const validCommand = commands.find((cmd) => cmd.name === lastToken);
+
+    if (validCommand && (!validCommand.subCommands || validCommand.subCommands.length === 0)) {
+      return [];
     }
 
-    return isCommandChainValid(remainingTokens, matchingCommand.subCommands || []);
+    // Otherwise, suggest top-level commands that match the last token
+    return commands
+      .map((cmd) => cmd.name)
+      .filter((name) => name && name.startsWith(lastToken));
+  };
+}
+
+
+function isCommandChainValid(tokens: string[], commandList: Command[]): boolean {
+  if (!tokens.length) return true;
+
+  const [currentToken, ...remainingTokens] = tokens;
+
+  const matchingCommand = commandList.find((cmd) => cmd.name === currentToken);
+
+  if (!matchingCommand) {
+    return false;
   }
+
+  if (!remainingTokens.length) {
+    return true;
+  }
+
+  return isCommandChainValid(remainingTokens, matchingCommand.subCommands || []);
+}

@@ -43,17 +43,17 @@ export const getInputStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
 });
 
 export const getRunButtonStyle = (finalTheme: ConsoleTheme): CSSProperties => {
-  const backgroundColor = finalTheme.textColor?.primary || "#349E44"; // Default background color
-  const textColor = isColorDark(backgroundColor) ? "#FFFFFF" : "#000000"; // Calculate text/icon color for contrast
+  const backgroundColor = finalTheme.textColor?.primary || "#349E44";
+  const textColor = isColorDark(backgroundColor) ? "#FFFFFF" : "#000000";
 
   return {
-    display: "flex", // Flexbox container
-    alignItems: "center", // Vertically center content
-    justifyContent: "center", // Horizontally center content
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     padding: "6px 12px",
     border: "none",
     backgroundColor,
-    color: textColor, // Set text/icon color dynamically
+    color: textColor,
     marginLeft: "8px",
     cursor: "pointer",
     borderRadius: "4px",

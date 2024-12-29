@@ -27,7 +27,7 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
   setSuggestionIndex,
   onSuggestionSelect,
   theme,
-  maxVisibleSuggestions = 3, // Default to 3 if not provided
+  maxVisibleSuggestions = 3, // Default to 3
 }) => {
   const totalSuggestions = suggestions.length;
   const scrollIntervalRef = useRef<number | null>(null); // For controlling the scroll interval
@@ -61,7 +61,7 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
       } else {
         handleDown();
       }
-    }, 100); // Scroll every 100ms
+    }, 200); // Scroll every 100ms
   };
 
   // Stop scrolling
