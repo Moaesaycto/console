@@ -72,6 +72,7 @@ function App() {
         flexDirection: "column",
         minHeight: "100vh",
         fontFamily: "Barlow, sans-serif",
+        backgroundColor: "#242424",
       }}
     >
       <Header />
