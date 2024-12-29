@@ -1,5 +1,5 @@
 import { Command } from "../types";
-import { walkChain } from "./walkChain";
+import { walkChain, walkChainDepth } from "./walkChain";
 
 export function updateSuggestions(
   currentInput: string,
@@ -22,14 +22,12 @@ export function updateSuggestions(
     tokens.push("");
   }
 
-  // Handle the case for "help" or any fully-typed command without a trailing space
   if (tokens.length === 1 && !endsWithSpace) {
     const firstToken = tokens[0];
     const filteredCommands = commands
       .map((c) => c.name)
       .filter((name) => name && name.startsWith(firstToken));
 
-    // Hide suggestions if the command is fully typed with no ambiguity
     if (filteredCommands.length === 1 && filteredCommands[0] === firstToken) {
       setSuggestions([]);
       setShowSuggestions(false);
@@ -41,19 +39,16 @@ export function updateSuggestions(
     return;
   }
 
-  // Check if the first token matches a valid top-level command
   const firstToken = tokens[0];
   const validTopLevelCommand = commands.find((cmd) => cmd.name === firstToken);
 
   if (!validTopLevelCommand) {
-    // If the first token is not a valid command, hide suggestions
     setSuggestions([]);
     setShowSuggestions(false);
     setSuggestionIndex(0);
     return;
   }
 
-  // If the input ends with a space, we want to show subcommands or arguments
   if (endsWithSpace) {
     const foundCmd = walkChain(tokens, commands);
 
@@ -71,7 +66,9 @@ export function updateSuggestions(
     }
 
     if (foundCmd.autoComplete) {
-      const customSuggestions = foundCmd.autoComplete(tokens.slice(1));
+      // Pass only the tokens relevant to the command's context
+      const commandContextTokens = tokens.slice(walkChainDepth(tokens, commands));
+      const customSuggestions = foundCmd.autoComplete(commandContextTokens);
       setSuggestions(customSuggestions);
       setShowSuggestions(customSuggestions.length > 0);
       return;
@@ -81,7 +78,6 @@ export function updateSuggestions(
     setShowSuggestions(false);
     return;
   } else {
-    // User is typing the last token, suggest completions based on partial match
     const lastToken = tokens[tokens.length - 1] || "";
     const priorTokens = tokens.slice(0, -1);
 
@@ -101,7 +97,6 @@ export function updateSuggestions(
         .map((sub) => sub.name)
         .filter((name) => name && name.startsWith(lastToken));
 
-      // Hide suggestions if the subcommand is fully typed and unambiguous
       if (filteredSubCommands.length === 1 && filteredSubCommands[0] === lastToken) {
         setSuggestions([]);
         setShowSuggestions(false);
@@ -114,11 +109,12 @@ export function updateSuggestions(
     }
 
     if (foundCmd.autoComplete) {
+      // Pass only the tokens relevant to the command's context
+      const commandContextTokens = tokens.slice(walkChainDepth(tokens, commands));
       const customSuggestions = foundCmd
-        .autoComplete(tokens.slice(1))
+        .autoComplete(commandContextTokens)
         .filter((s) => s.toLowerCase().startsWith(lastToken.toLowerCase()));
 
-      // Hide suggestions if the auto-complete result is fully typed and unambiguous
       if (customSuggestions.length === 1 && customSuggestions[0].toLowerCase() === lastToken.toLowerCase()) {
         setSuggestions([]);
         setShowSuggestions(false);

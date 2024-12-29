@@ -14,6 +14,7 @@ import { timeCommand } from "./commands/timeCommand";
 import { rpsCommand } from "./commands/rockPaperScissorsCommand";
 import { headsOrTailsCommand } from "./commands/headsOrTailsCommand";
 import { buildComputerCommand } from "./commands/buildComputer";
+import { testCommand } from "./commands/testCommand";
 
 import { themes } from "./themes/presets";
 import { useState } from "react";
@@ -48,6 +49,7 @@ const commands = [
   rpsCommand,
   headsOrTailsCommand,
   buildComputerCommand,
+  testCommand,
 ];
 
 const commandDescriptions = [

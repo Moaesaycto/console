@@ -19,3 +19,19 @@ export function walkChain(tokens: string[], commandList: Command[]): Command | n
 
   return goDeeper(commandList);
 }
+
+
+// Utility function to determine the depth of the token chain for slicing
+export function walkChainDepth(tokens: string[], commands: Command[]): number {
+  let depth = 0;
+  let currentCommands = commands;
+
+  for (const token of tokens) {
+    const cmd = currentCommands.find((c) => c.name === token);
+    if (!cmd) break;
+    depth++;
+    currentCommands = cmd.subCommands || [];
+  }
+
+  return depth;
+}
