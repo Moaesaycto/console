@@ -91,6 +91,10 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
         e.preventDefault();
         setSuggestionIndex((prev) => (prev === 0 ? suggestions.length - 1 : prev - 1));
         return;
+      } else if (e.key === "Escape" || e.key === "ArrowRight") {
+        e.preventDefault();
+        setShowSuggestions(false); // Hide suggestions on Escape or Right Arrow
+        return;
       } else if (e.key === "Tab" || e.key === "Enter") {
         e.preventDefault();
         autoCompleteSuggestion();
@@ -111,6 +115,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
       }
     }
   }
+  
   
 
 

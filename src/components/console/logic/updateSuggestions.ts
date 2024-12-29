@@ -1,9 +1,6 @@
 import { Command } from "../types";
 import { walkChain } from "./walkChain";
 
-/**
- * Updates the suggestion list and visibility based on the current input.
- */
 export function updateSuggestions(
   currentInput: string,
   commands: Command[],
@@ -21,26 +18,18 @@ export function updateSuggestions(
   const endsWithSpace = currentInput.endsWith(" ");
   const tokens = currentInput.trim().split(" ").filter((t) => t !== "");
 
-  // Tells autocomplete for help to not show irrelevant data when nothing has been typed except a space
-  if (tokens[0] === "help" && endsWithSpace) {
-    tokens.push("");
-  }
-
-  // Handle top-level command suggestions if only the first token is being typed
+  // Handle the case for "help" or any fully-typed command without a trailing space
   if (tokens.length === 1 && !endsWithSpace) {
     const firstToken = tokens[0];
     const filteredCommands = commands
       .map((c) => c.name)
       .filter((name) => name && name.startsWith(firstToken));
 
-    // Suppress suggestions if the token matches exactly one valid command
+    // Hide suggestions if the command is fully typed with no ambiguity
     if (filteredCommands.length === 1 && filteredCommands[0] === firstToken) {
-      const matchedCommand = commands.find((cmd) => cmd.name === firstToken);
-      if (!matchedCommand?.subCommands?.length && !matchedCommand?.autoComplete) {
-        setSuggestions([]);
-        setShowSuggestions(false);
-        return;
-      }
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
     }
 
     setSuggestions(filteredCommands);
@@ -60,8 +49,7 @@ export function updateSuggestions(
     return;
   }
 
-  // If the input ends with a space, we want to show subcommands (or arguments)
-  // for the last valid command chain.
+  // If the input ends with a space, we want to show subcommands or arguments
   if (endsWithSpace) {
     const foundCmd = walkChain(tokens, commands);
 
@@ -71,12 +59,8 @@ export function updateSuggestions(
       return;
     }
 
-    // Always gather subcommands if they exist.
-    // If no subcommands but `autoComplete` exists, we show custom suggestions.
     if (foundCmd.subCommands && foundCmd.subCommands.length > 0) {
-      const subcommandSuggestions = foundCmd.subCommands
-        .map((sub) => sub.name)
-        .filter((name) => name);
+      const subcommandSuggestions = foundCmd.subCommands.map((sub) => sub.name);
       setSuggestions(subcommandSuggestions);
       setShowSuggestions(subcommandSuggestions.length > 0);
       return;
@@ -89,7 +73,6 @@ export function updateSuggestions(
       return;
     }
 
-    // Otherwise, no suggestions
     setSuggestions([]);
     setShowSuggestions(false);
     return;
@@ -121,12 +104,8 @@ export function updateSuggestions(
 
     if (foundCmd.autoComplete) {
       const customSuggestions = foundCmd
-    .autoComplete(tokens.slice(1))
-    // If you want partial matching in the UI as you type,
-    // ensure you filter here:
-    .filter((s) =>
-      s.toLowerCase().startsWith(lastToken.toLowerCase())
-    );
+        .autoComplete(tokens.slice(1))
+        .filter((s) => s.toLowerCase().startsWith(lastToken.toLowerCase()));
 
       setSuggestions(customSuggestions);
       setShowSuggestions(customSuggestions.length > 0);
