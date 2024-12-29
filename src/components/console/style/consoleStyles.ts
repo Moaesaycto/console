@@ -65,8 +65,8 @@ export const getSuggestionsBoxStyle = (finalTheme: ConsoleTheme): CSSProperties 
   position: "absolute",
   bottom: "45px",
   left: "8px",
-  backgroundColor: finalTheme.backgroundColor?.secondary || "#222", // Use theme secondary color
-  border: `1px solid ${finalTheme.textColor?.default || "#555"}`, // Use theme border color
+  backgroundColor: finalTheme.backgroundColor?.secondary || "#222",
+  // border: `1px solid ${finalTheme.textColor?.default || "#555"}`,
   borderRadius: "4px",
   padding: "4px",
   zIndex: 999,
