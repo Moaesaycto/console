@@ -136,11 +136,17 @@ function App() {
         >
 
           {/* ACTUAL IMPLEMENTATION HERE */}
+
+          {/* 
+            Text is automatically formatted on the runButton, same with icons. If you are using
+            icons (like in the example below), make sure you put `color: "currentColor"`
+          */}
+
           <ConsoleLine
             commands={commands}
             style={mergeTheme(themes[currentTheme])}
             startMessage={startMessage}
-            placeholderText="Enter a command here"
+            placeholderText="Enter a command, or type `help` for more information"
             runButton={
               <PlayIcon style={{ width: "20px", height: "20px", color: "currentColor" }} />
             }
