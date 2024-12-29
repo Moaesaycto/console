@@ -44,13 +44,16 @@ export const getInputStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
 
 export const getRunButtonStyle = (finalTheme: ConsoleTheme): CSSProperties => {
   const backgroundColor = finalTheme.textColor?.primary || "#349E44"; // Default background color
-  const textColor = isColorDark(backgroundColor) ? "#FFFFFF" : "#000000"; // Choose appropriate text color
+  const textColor = isColorDark(backgroundColor) ? "#FFFFFF" : "#000000"; // Calculate text/icon color for contrast
 
   return {
+    display: "flex", // Flexbox container
+    alignItems: "center", // Vertically center content
+    justifyContent: "center", // Horizontally center content
     padding: "6px 12px",
     border: "none",
     backgroundColor,
-    color: textColor,
+    color: textColor, // Set text/icon color dynamically
     marginLeft: "8px",
     cursor: "pointer",
     borderRadius: "4px",
@@ -61,12 +64,12 @@ export const getRunButtonStyle = (finalTheme: ConsoleTheme): CSSProperties => {
   };
 };
 
+
 export const getSuggestionsBoxStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
   position: "absolute",
   bottom: "45px",
   left: "8px",
   backgroundColor: finalTheme.backgroundColor?.secondary || "#222",
-  // border: `1px solid ${finalTheme.textColor?.default || "#555"}`,
   borderRadius: "4px",
   padding: "4px",
   zIndex: 999,
@@ -76,23 +79,23 @@ export const getSuggestionsBoxStyle = (finalTheme: ConsoleTheme): CSSProperties 
   fontFamily: finalTheme.font,
   fontSize: finalTheme.fontSize,
   lineHeight: finalTheme.lineHeight,
-  color: finalTheme.textColor?.primary, // Use theme primary text color
+  color: finalTheme.textColor?.primary,
 });
 
 export const getSuggestionItemStyle = (finalTheme: ConsoleTheme, active: boolean): CSSProperties => ({
   padding: "4px 8px",
   backgroundColor: active
-    ? finalTheme.backgroundColor?.primary || "#555" // Highlight with primary background
-    : "transparent", // Transparent background for non-active
+    ? finalTheme.backgroundColor?.primary || "#555"
+    : "transparent",
   color: active
-    ? finalTheme.textColor?.secondary || "#FFF" // Secondary text color for active
-    : finalTheme.textColor?.primary || "#FFF", // Primary text color for non-active
+    ? finalTheme.textColor?.secondary || "#FFF"
+    : finalTheme.textColor?.primary || "#FFF",
   cursor: "pointer",
   fontFamily: finalTheme.font,
   fontSize: finalTheme.fontSize,
   lineHeight: finalTheme.lineHeight,
-  borderRadius: "2px", // Slight rounding for better UX
-  transition: "background-color 0.2s ease, color 0.2s ease", // Smooth transitions
+  borderRadius: "2px",
+  transition: "background-color 0.2s ease, color 0.2s ease",
 });
 
 export const getGhostStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
@@ -101,7 +104,7 @@ export const getGhostStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
   top: 0,
   pointerEvents: "none",
   userSelect: "none",
-  color: "rgba(255,255,255,0.3)", // Semi-transparent placeholder color
+  color: "rgba(255,255,255,0.3)",
   fontFamily: finalTheme.font,
   fontSize: finalTheme.fontSize,
   lineHeight: finalTheme.lineHeight,

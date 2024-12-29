@@ -5,6 +5,7 @@ import React, {
   KeyboardEvent,
   ChangeEvent,
   FormEvent,
+  ReactNode,
 } from "react";
 import { Command } from "./types";
 import { parseColorTokens, ColorSegment } from "./utils/colorParsing";
@@ -29,12 +30,16 @@ interface ConsoleLineProps {
   commands: Command[];
   style?: ConsoleTheme;
   startMessage?: string;
+  placeholderText?: string;
+  runButton?: ReactNode;
 }
 
 export const ConsoleLine: React.FC<ConsoleLineProps> = ({
   commands,
   style,
   startMessage,
+  placeholderText = "Type a command...",
+  runButton = <span>Run</span>,
 }) => {
   commands = [...builtInCommands, ...commands];
 
@@ -250,7 +255,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               style={getInputStyle(finalTheme)}
-              placeholder="Type a command..."
+              placeholder={placeholderText} // Use the custom placeholder text
               autoComplete="off"
               spellCheck="false"
             />
@@ -263,7 +268,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
           </div>
 
           <button type="submit" style={getRunButtonStyle(finalTheme)}>
-            Run
+            {runButton} {/* Use the custom run button */}
           </button>
         </form>
 

@@ -19,6 +19,8 @@ import { themes } from "./themes/presets";
 import { useState } from "react";
 import ThemeSelector from "./themes/ThemeSelector";
 
+import { PlayIcon } from "@radix-ui/react-icons";
+
 /* This is an example of updating the theme with a custom font size. Normally it's 14px, but for
 this demonstration, it has been changed to 16px */
 const partialTheme: ConsoleTheme = {
@@ -76,7 +78,7 @@ function App() {
   const handleThemeChange = (themeName: string) => {
     setCurrentTheme(themeName);
   };
-  
+
   return (
     <div
       style={{
@@ -88,7 +90,7 @@ function App() {
       }}
     >
       <Header />
-      <div style={{ flex: "1", paddingTop: "60px", maxWidth: "1280px", alignSelf: "center"}}>
+      <div style={{ flex: "1", paddingTop: "60px", maxWidth: "1280px", alignSelf: "center" }}>
         <p
           style={{
             width: "80%",
@@ -132,7 +134,18 @@ function App() {
             border: "1px solid #ccc",
           }}
         >
-          <ConsoleLine commands={commands} style={mergeTheme(themes[currentTheme])} startMessage={startMessage} />
+
+          {/* ACTUAL IMPLEMENTATION HERE */}
+          <ConsoleLine
+            commands={commands}
+            style={mergeTheme(themes[currentTheme])}
+            startMessage={startMessage}
+            placeholderText="Enter a command here"
+            runButton={
+              <PlayIcon style={{ width: "20px", height: "20px", color: "currentColor" }} />
+            }
+          />
+
         </div>
         <br />
         <div style={{ width: "80%", margin: "20px auto", color: "#fff" }}>
@@ -192,7 +205,7 @@ function App() {
           </table>
           <p>
             You can try this out yourself in the console above by using these codes with the <code style={codeStyle}>echo</code> command. For example, type
-            out <code style={codeStyle}>echo &eHello&r, World!</code> to see it in action. These are automatically formatted by 
+            out <code style={codeStyle}>echo &eHello&r, World!</code> to see it in action. These are automatically formatted by
           </p>
         </div>
       </div>

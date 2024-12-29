@@ -16,6 +16,10 @@ If you like what I do, consider visiting my website [here](https://moaesaycto.gi
     - [Example](#example)
   - [Adding Custom Themes](#adding-custom-themes)
     - [Example](#example-1)
+  - [Customizable Input and Run Button](#customizable-input-and-run-button)
+    - [Custom Placeholder Text](#custom-placeholder-text)
+    - [Custom Run Button](#custom-run-button)
+    - [Example](#example-2)
   - [Custom Commands](#custom-commands)
     - [1. **Understand the `Command` Interface**](#1-understand-the-command-interface)
     - [2. **Example of a Simple Command**](#2-example-of-a-simple-command)
@@ -86,6 +90,41 @@ const partialTheme: ConsoleTheme = {
 
 <ConsoleLine commands={commands} style={partialTheme} />
 ```
+
+---
+
+## Customizable Input and Run Button
+
+The console allows you to customize:
+
+- **The placeholder text** in the input field.
+- **The run button content**, whether it's text or an icon.
+
+### Custom Placeholder Text
+
+You can pass a custom `placeholderText` prop to replace the default placeholder text.
+
+### Custom Run Button
+
+You can pass a custom `runButton` prop to replace the default "Run" button text. This can be any React element, such as an icon or styled text.
+
+### Example
+
+```tsx
+import { PlayIcon } from "@radix-ui/react-icons";
+
+<ConsoleLine
+  commands={commands}
+  style={theme}
+  startMessage={startMessage}
+  placeholderText="Enter your command here..."
+  runButton={<PlayIcon style={{ color: "white", width: "20px", height: "20px" }} />}
+/>
+```
+
+- In the example above:
+  - The placeholder text is set to `Enter your command here...`.
+  - The run button is replaced with the `PlayIcon` from Radix Icons, styled appropriately.
 
 ---
 
