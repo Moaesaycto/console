@@ -65,8 +65,8 @@ export const getSuggestionsBoxStyle = (finalTheme: ConsoleTheme): CSSProperties 
   position: "absolute",
   bottom: "45px",
   left: "8px",
-  backgroundColor: "#222",
-  border: "1px solid #555",
+  backgroundColor: finalTheme.backgroundColor?.secondary || "#222", // Use theme secondary color
+  border: `1px solid ${finalTheme.textColor?.default || "#555"}`, // Use theme border color
   borderRadius: "4px",
   padding: "4px",
   zIndex: 999,
@@ -76,16 +76,23 @@ export const getSuggestionsBoxStyle = (finalTheme: ConsoleTheme): CSSProperties 
   fontFamily: finalTheme.font,
   fontSize: finalTheme.fontSize,
   lineHeight: finalTheme.lineHeight,
+  color: finalTheme.textColor?.primary, // Use theme primary text color
 });
 
 export const getSuggestionItemStyle = (finalTheme: ConsoleTheme, active: boolean): CSSProperties => ({
   padding: "4px 8px",
-  backgroundColor: active ? "#555" : "transparent",
-  color: "#fff",
+  backgroundColor: active
+    ? finalTheme.backgroundColor?.primary || "#555" // Highlight with primary background
+    : "transparent", // Transparent background for non-active
+  color: active
+    ? finalTheme.textColor?.secondary || "#FFF" // Secondary text color for active
+    : finalTheme.textColor?.primary || "#FFF", // Primary text color for non-active
   cursor: "pointer",
   fontFamily: finalTheme.font,
   fontSize: finalTheme.fontSize,
   lineHeight: finalTheme.lineHeight,
+  borderRadius: "2px", // Slight rounding for better UX
+  transition: "background-color 0.2s ease, color 0.2s ease", // Smooth transitions
 });
 
 export const getGhostStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
@@ -94,7 +101,7 @@ export const getGhostStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
   top: 0,
   pointerEvents: "none",
   userSelect: "none",
-  color: "rgba(255,255,255,0.3)",
+  color: "rgba(255,255,255,0.3)", // Semi-transparent placeholder color
   fontFamily: finalTheme.font,
   fontSize: finalTheme.fontSize,
   lineHeight: finalTheme.lineHeight,

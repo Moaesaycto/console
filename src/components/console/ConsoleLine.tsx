@@ -19,12 +19,11 @@ import {
   getInputContainerStyle,
   getInputStyle,
   getRunButtonStyle,
-  getGhostStyle
+  getGhostStyle,
 } from "./style/consoleStyles";
 import { bindAutoComplete } from "./utils/bindAutoComplete";
 import { helpCommand } from "./commands/builtInCommands";
 import SuggestionBox from "./components/SuggestionPopup";
-
 
 interface ConsoleLineProps {
   commands: Command[];
@@ -32,8 +31,11 @@ interface ConsoleLineProps {
   startMessage?: string;
 }
 
-
-export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, startMessage }) => {
+export const ConsoleLine: React.FC<ConsoleLineProps> = ({
+  commands,
+  style,
+  startMessage,
+}) => {
   commands = [...builtInCommands, ...commands];
 
   helpCommand.autoComplete = bindAutoComplete(commands);
@@ -42,6 +44,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
 
   const [history, setHistory] = useState<string[]>(startMessage ? [startMessage] : []);
   const [input, setInput] = useState<string>("");
+  const [isFocused, setIsFocused] = useState<boolean>(true);
 
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
@@ -53,7 +56,6 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -61,9 +63,12 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
   }, [history]);
 
   useEffect(() => {
-    updateSuggestions(input, commands, setSuggestions, setShowSuggestions, setSuggestionIndex);
-  }, [input]);
-
+    if (isFocused) {
+      updateSuggestions(input, commands, setSuggestions, setShowSuggestions, setSuggestionIndex);
+    } else {
+      setShowSuggestions(false); // Hide suggestions when not focused
+    }
+  }, [input, isFocused]);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -74,12 +79,10 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
     setShowSuggestions(false);
   }
 
-
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
     setInput(e.target.value);
     setHistoryIndex(-1);
   }
-
 
   function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (showSuggestions && suggestions.length > 0) {
@@ -116,7 +119,6 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
     }
   }
 
-
   function navigateHistory(direction: "older" | "newer") {
     let newIndex = historyIndex;
     if (direction === "older") {
@@ -136,7 +138,6 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
     }
   }
 
-
   function autoCompleteSuggestion() {
     if (!suggestions.length) return;
 
@@ -145,7 +146,6 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
     const selectedSuggestion = suggestions[suggestionIndex];
 
     if (!selectedSuggestion) {
-      // Ensure a valid suggestion exists
       return;
     }
 
@@ -164,11 +164,8 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
     setSuggestions([]);
   }
 
-
-
   let ghostedText = "";
-  if (showSuggestions && suggestions.length > 0 && input.trim()) {
-    // Match the last token of the input
+  if (isFocused && showSuggestions && suggestions.length > 0 && input.trim()) {
     const lastSpaceIndex = input.lastIndexOf(" ");
     const lastToken = lastSpaceIndex === -1 ? input : input.slice(lastSpaceIndex + 1);
     const suggestion = suggestions[suggestionIndex];
@@ -194,7 +191,6 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
     setShowSuggestions(false);
     setSuggestions([]);
   }
-
 
   function parseLine(line: string): ColorSegment[] {
     return parseColorTokens(line, finalTheme.textColor!);
@@ -249,6 +245,8 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
               ref={inputRef}
               type="text"
               value={input}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               style={getInputStyle(finalTheme)}
@@ -256,7 +254,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
               autoComplete="off"
               spellCheck="false"
             />
-            {ghostedText && (
+            {isFocused && ghostedText && (
               <span style={{ ...getGhostStyle(finalTheme), whiteSpace: "pre-wrap" }}>
                 {input}
                 <span style={{ opacity: 0.5 }}>{ghostedText}</span>
@@ -269,16 +267,15 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
           </button>
         </form>
 
-        {showSuggestions && suggestions.length > 0 && (
+        {isFocused && showSuggestions && suggestions.length > 0 && (
           <SuggestionBox
-          suggestions={suggestions}
-          suggestionIndex={suggestionIndex}
-          setSuggestionIndex={setSuggestionIndex}
-          onSuggestionSelect={handleSuggestionSelect}
-          theme={finalTheme}
-          maxVisibleSuggestions={3} // Set your desired number here
-        />
-        
+            suggestions={suggestions}
+            suggestionIndex={suggestionIndex}
+            setSuggestionIndex={setSuggestionIndex}
+            onSuggestionSelect={handleSuggestionSelect}
+            theme={finalTheme}
+            maxVisibleSuggestions={3}
+          />
         )}
       </div>
     </div>
