@@ -119,11 +119,11 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
         e.preventDefault();
         setSuggestionIndex((prev) => (prev === 0 ? suggestions.length - 1 : prev - 1));
         return;
-      } else if (e.key === "Escape" || e.key === "ArrowRight") {
+      } else if (e.key === "Escape") {
         e.preventDefault();
         setShowSuggestions(false); // Hide suggestions on Escape or Right Arrow
         return;
-      } else if (e.key === "Tab" || e.key === "Enter") {
+      } else if (e.key === "Tab" || e.key === "Enter" || e.key === "ArrowRight") {
         e.preventDefault();
         autoCompleteSuggestion();
         return;
