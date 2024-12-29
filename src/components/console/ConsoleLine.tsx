@@ -62,8 +62,10 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const mirrorRef = useRef<HTMLDivElement>(null);
 
   const [truncatedPlaceholder, setTruncatedPlaceholder] = useState(placeholderText);
+  const [suggestionBoxPosition, setSuggestionBoxPosition] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -74,6 +76,7 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
   useEffect(() => {
     if (isFocused) {
       updateSuggestions(input, commands, setSuggestions, setShowSuggestions, setSuggestionIndex);
+      updateSuggestionBoxPosition();
     } else {
       setShowSuggestions(false); // Hide suggestions when not focused
     }
@@ -85,6 +88,22 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
       const charWidth = 8; // Adjust based on font size and style
       setTruncatedPlaceholder(truncateTextToFit(placeholderText, inputWidth, charWidth));
     }
+  };
+
+  const updateSuggestionBoxPosition = () => {
+    if (!inputRef.current || !mirrorRef.current) return;
+
+    const lastSpaceIndex = input.lastIndexOf(" ");
+    const substringUpToWordStart =
+      lastSpaceIndex === -1 ? "" : input.substring(0, lastSpaceIndex + 1);
+
+    mirrorRef.current.textContent = substringUpToWordStart || "";
+
+    const mirrorWidth = mirrorRef.current.offsetWidth;
+    const topOffset = inputRef.current.offsetTop + inputRef.current.offsetHeight;
+    const leftOffset = inputRef.current.offsetLeft + mirrorWidth;
+
+    setSuggestionBoxPosition({ top: topOffset, left: leftOffset });
   };
 
   useEffect(() => {
@@ -144,40 +163,34 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
         return;
       }
     }
-  }  
-  
+  }
 
   function navigateHistory(direction: "older" | "newer") {
     let newIndex = historyIndex;
-  
+
     if (direction === "older") {
-      // Move to older commands
       if (newIndex === -1 && commandHistory.length > 0) {
-        setOriginalInput(input); // Store the current input before navigating
-        newIndex = commandHistory.length - 1; // Start at the newest command
+        setOriginalInput(input);
+        newIndex = commandHistory.length - 1;
       } else {
-        newIndex = Math.max(newIndex - 1, 0); // Go back in history, stop at the first command
+        newIndex = Math.max(newIndex - 1, 0);
       }
     } else if (direction === "newer") {
-      // Move to newer commands
       if (newIndex === commandHistory.length - 1) {
-        setHistoryIndex(-1); // Exit history navigation
-        setInput(originalInput); // Restore the original input
+        setHistoryIndex(-1);
+        setInput(originalInput);
         return;
       } else if (newIndex !== -1) {
-        newIndex = Math.min(newIndex + 1, commandHistory.length - 1); // Move forward, stop at the last command
+        newIndex = Math.min(newIndex + 1, commandHistory.length - 1);
       }
     }
-  
+
     setHistoryIndex(newIndex);
-  
+
     if (newIndex !== -1) {
-      setInput(commandHistory[newIndex] || ""); // Load the command at the current index
+      setInput(commandHistory[newIndex] || "");
     }
   }
-  
-  
-
 
   function autoCompleteSuggestion() {
     if (!suggestions.length) return;
@@ -303,6 +316,18 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
                 <span style={{ opacity: 0.5 }}>{ghostedText}</span>
               </span>
             )}
+            <div
+              ref={mirrorRef}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                visibility: "hidden",
+                whiteSpace: "pre",
+                fontSize: finalTheme.fontSize || "14px",
+                fontFamily: finalTheme.font || "monospace",
+              }}
+            ></div>
           </div>
 
           <button type="submit" style={getRunButtonStyle(finalTheme)}>
@@ -311,17 +336,24 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({
         </form>
 
         {isFocused && showSuggestions && suggestions.length > 0 && (
-          <SuggestionBox
-            suggestions={suggestions}
-            suggestionIndex={suggestionIndex}
-            setSuggestionIndex={setSuggestionIndex}
-            onSuggestionSelect={handleSuggestionSelect}
-            theme={finalTheme}
-            maxVisibleSuggestions={3}
-          />
+          <div
+            style={{
+              position: "absolute",
+              top: suggestionBoxPosition.top,
+              left: suggestionBoxPosition.left,
+            }}
+          >
+            <SuggestionBox
+              suggestions={suggestions}
+              suggestionIndex={suggestionIndex}
+              setSuggestionIndex={setSuggestionIndex}
+              onSuggestionSelect={handleSuggestionSelect}
+              theme={finalTheme}
+              maxVisibleSuggestions={3}
+            />
+          </div>
         )}
       </div>
-
     </div>
   );
 };

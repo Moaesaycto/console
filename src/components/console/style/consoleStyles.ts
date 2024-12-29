@@ -65,10 +65,13 @@ export const getRunButtonStyle = (finalTheme: ConsoleTheme): CSSProperties => {
 };
 
 
-export const getSuggestionsBoxStyle = (finalTheme: ConsoleTheme): CSSProperties => ({
+export const getSuggestionsBoxStyle = (
+  finalTheme: ConsoleTheme,
+  position?: { top?: string; left?: string }
+): CSSProperties => ({
   position: "absolute",
-  bottom: "45px",
-  left: "8px",
+  bottom: "45px", // Default positioning
+  left: "8px",   // Default positioning
   backgroundColor: finalTheme.backgroundColor?.secondary || "#222",
   borderRadius: "4px",
   padding: "4px",
@@ -80,7 +83,9 @@ export const getSuggestionsBoxStyle = (finalTheme: ConsoleTheme): CSSProperties 
   fontSize: finalTheme.fontSize,
   lineHeight: finalTheme.lineHeight,
   color: finalTheme.textColor?.primary,
+  ...position, // Merge dynamic position if provided
 });
+
 
 export const getSuggestionItemStyle = (finalTheme: ConsoleTheme, active: boolean): CSSProperties => ({
   padding: "4px 8px",
