@@ -19,12 +19,11 @@ import {
   getInputContainerStyle,
   getInputStyle,
   getRunButtonStyle,
-  getSuggestionItemStyle,
-  getSuggestionsBoxStyle,
   getGhostStyle
 } from "./style/consoleStyles";
 import { bindAutoComplete } from "./utils/bindAutoComplete";
 import { helpCommand } from "./commands/builtInCommands";
+import SuggestionBox from "./components/SuggestionPopup";
 
 
 interface ConsoleLineProps {
@@ -136,16 +135,16 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
 
   function autoCompleteSuggestion() {
     if (!suggestions.length) return;
-  
+
     const splitted = input.split(" ");
     const endsWithSpace = input.endsWith(" ");
     const selectedSuggestion = suggestions[suggestionIndex];
-  
+
     if (!selectedSuggestion) {
       // Ensure a valid suggestion exists
       return;
     }
-  
+
     if (endsWithSpace) {
       setInput(input + selectedSuggestion + " ");
     } else {
@@ -156,26 +155,41 @@ export const ConsoleLine: React.FC<ConsoleLineProps> = ({ commands, style, start
         setInput(selectedSuggestion + " ");
       }
     }
-  
+
     setShowSuggestions(false);
     setSuggestions([]);
   }
-  
+
 
 
   let ghostedText = "";
-if (showSuggestions && suggestions.length > 0 && input.trim()) {
-  // Match the last token of the input
-  const lastSpaceIndex = input.lastIndexOf(" ");
-  const lastToken = lastSpaceIndex === -1 ? input : input.slice(lastSpaceIndex + 1);
-  const suggestion = suggestions[suggestionIndex];
+  if (showSuggestions && suggestions.length > 0 && input.trim()) {
+    // Match the last token of the input
+    const lastSpaceIndex = input.lastIndexOf(" ");
+    const lastToken = lastSpaceIndex === -1 ? input : input.slice(lastSpaceIndex + 1);
+    const suggestion = suggestions[suggestionIndex];
 
-  if (suggestion && lastToken !== undefined && suggestion.startsWith(lastToken)) {
-    ghostedText = suggestion.slice(lastToken.length);
+    if (suggestion && lastToken !== undefined && suggestion.startsWith(lastToken)) {
+      ghostedText = suggestion.slice(lastToken.length);
+    }
   }
-}
 
-
+  function handleSuggestionSelect(suggestion: string) {
+    const splitted = input.split(" ");
+    const endsWithSpace = input.endsWith(" ");
+    if (endsWithSpace) {
+      setInput(input + suggestion + " ");
+    } else {
+      if (splitted.length > 0) {
+        splitted[splitted.length - 1] = suggestion;
+        setInput(splitted.join(" ") + " ");
+      } else {
+        setInput(suggestion + " ");
+      }
+    }
+    setShowSuggestions(false);
+    setSuggestions([]);
+  }
 
 
   function parseLine(line: string): ColorSegment[] {
@@ -252,34 +266,13 @@ if (showSuggestions && suggestions.length > 0 && input.trim()) {
         </form>
 
         {showSuggestions && suggestions.length > 0 && (
-          <div style={getSuggestionsBoxStyle(finalTheme)}>
-            {suggestions.map((sug, idx) => (
-              <div
-                key={sug}
-                style={getSuggestionItemStyle(finalTheme, idx === suggestionIndex)}
-                onMouseEnter={() => setSuggestionIndex(idx)}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  const splitted = input.split(" ");
-                  const endsWithSpace = input.endsWith(" ");
-                  if (endsWithSpace) {
-                    setInput(input + sug + " ");
-                  } else {
-                    if (splitted.length > 0) {
-                      splitted[splitted.length - 1] = sug;
-                      setInput(splitted.join(" ") + " ");
-                    } else {
-                      setInput(sug + " ");
-                    }
-                  }
-                  setShowSuggestions(false);
-                  setSuggestions([]);
-                }}
-              >
-                {sug}
-              </div>
-            ))}
-          </div>
+          <SuggestionBox
+            suggestions={suggestions}
+            suggestionIndex={suggestionIndex}
+            setSuggestionIndex={setSuggestionIndex}
+            onSuggestionSelect={handleSuggestionSelect}
+            theme={finalTheme}
+          />
         )}
       </div>
     </div>
