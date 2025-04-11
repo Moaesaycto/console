@@ -21,6 +21,7 @@ import { useState } from "react";
 import ThemeSelector from "./themes/ThemeSelector";
 
 import { PlayIcon } from "@radix-ui/react-icons";
+import MoaeButton from "./components/MoaeButton";
 
 /* This is an example of updating the theme with a custom font size. Normally it's 14px, but for
 this demonstration, it has been changed to 16px */
@@ -91,6 +92,7 @@ function App() {
         backgroundColor: "#242424",
       }}
     >
+      <MoaeButton />
       <Header />
       <div style={{ flex: "1", paddingTop: "60px", maxWidth: "1280px", alignSelf: "center" }}>
         <p
